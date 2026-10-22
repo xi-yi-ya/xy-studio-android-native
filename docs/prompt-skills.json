@@ -1,0 +1,44 @@
+[
+  {
+    "skill": "qwen",
+    "file": "SKILL.md",
+    "sha256": "d9c3559e844f5106bb0280580ddc2ecede60536811fafffcced0c37b3fb9661a",
+    "bundled_sha256": "01c0a8a206bfcce18f8e47c8ad9d71f928f4775d225ecbe4b01d13035a6c7f91"
+  },
+  {
+    "skill": "qwen",
+    "file": "references/t2i-guide.md",
+    "sha256": "5d07c0fafc8de5b3a90a89446b82a80b1257a97506c8e33b57fb3c83df236390",
+    "bundled_sha256": "e2382695b78b3dab03546ee8d3f1f1d80fb1bea581f03e4edf173e0ea707fe75"
+  },
+  {
+    "skill": "qwen",
+    "file": "references/edit-guide.md",
+    "sha256": "922d7b387ff1121455d1e915105c2473e08b3cea6540ec5ddb958c5de65f3299",
+    "bundled_sha256": "03c926abd7cf01dcc0904911c99e9f0d712e9a8e7f03f596972219bb8870bf51"
+  },
+  {
+    "skill": "qwen",
+    "file": "references/output-contracts.md",
+    "sha256": "22493d042dc490b39a2415ad8d01af17371aeb86f38a9747bab84ae4c10a4260",
+    "bundled_sha256": "6e91fd03f357636ed6d029a996003f9cbd31ccb88c963c8462a910bf170778d4"
+  },
+  {
+    "skill": "h3",
+    "file": "SKILL.md",
+    "sha256": "3c0d6e13f8f608e0ec4e0ad566521ea0dc64e80d16b5f5df3dea28e0d56a0697",
+    "bundled_sha256": "f6d27e0b6820bd6738a3bb104731fdf50384b3bdab14a6c637d9bb060f796ed9"
+  },
+  {
+    "skill": "h3",
+    "file": "references/base-en.txt",
+    "sha256": "088fb632fa3cbb18c9821024fb689e6f0f356f824c8f2e6b8e43a33239b137c7",
+    "bundled_sha256": "103f2ca1708065e95286d84aca5a882f64539fc1fbd73735b63a43ef21d58c96"
+  },
+  {
+    "skill": "h3",
+    "file": "references/ref-en.txt",
+    "sha256": "b621067b41988c4d92be715b7a98ba48338f4076ab6041d95fcf463ea7c8ccdd",
+    "bundled_sha256": "16f4d2634863fe95b1e8edf583191a3dd21a92a3bfc6c6c5fc0868626a58db9f"
+  }
+]

@@ -1,0 +1,72 @@
+{
+  "version": "1.1.0",
+  "note": "Semantic API graphs; example prompts/private reference filenames are not published. Other approved graphs remain unchanged.",
+  "sources": [
+    {
+      "file": "image_qwen_image_2_1_t2i.json",
+      "sha256": "5a4fb633a8ea95b7137a23ee56b5068e5d8a919f4ddbb51defa2f22e8bc533f4",
+      "approvedVersion": "1.1.0",
+      "mode": "qwen",
+      "model": "qwen_image_2.1_bf16.safetensors",
+      "clip": "qwen3vl_8b_bf16.safetensors",
+      "vae": "qwen_image_2.1_vae_bf16.safetensors",
+      "sampling": {
+        "steps": 40,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      },
+      "export": {
+        "format": "png",
+        "format.bit_depth": "16-bit",
+        "format.input_color_space": "sRGB"
+      },
+      "userParameters": [
+        "prompt",
+        "seed",
+        "references in original order",
+        "output prefix isolated by project job"
+      ],
+      "resolution": {
+        "aspect_ratio": "16:9 (Widescreen)",
+        "megapixels": 6.6,
+        "multiple": 8
+      }
+    },
+    {
+      "file": "image_qwen_image_2_1_image_edit.json",
+      "sha256": "a1bb0560c93f2c012dc061dfd8d98e226ef166f4cffd90706316ce2e93337326",
+      "approvedVersion": "1.1.0",
+      "mode": "qwen_edit",
+      "model": "qwen_image_2.1_int8_convrot.safetensors",
+      "clip": "qwen3vl_8b_int8_convrot.safetensors",
+      "vae": "qwen_image_2.1_vae_bf16.safetensors",
+      "sampling": {
+        "steps": 40,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      },
+      "export": {
+        "format": "png",
+        "format.bit_depth": "8-bit",
+        "format.input_color_space": "sRGB"
+      },
+      "userParameters": [
+        "prompt",
+        "seed",
+        "references in original order",
+        "output prefix isolated by project job"
+      ],
+      "cache": {
+        "device": "auto",
+        "dtype": "default"
+      },
+      "referenceProcessing": "Original ordered images, no preprocessing center crop; resolution=0.",
+      "defaultOutput": "First reference image encoder latent; 32 px alignment.",
+      "customOutput": "Explicit GUI custom canvas selection uses empty latent, matching the supplied switch alternative."
+    }
+  ]
+}

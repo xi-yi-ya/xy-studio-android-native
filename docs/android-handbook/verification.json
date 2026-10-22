@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-22",
+  "ide": "Android Studio 2026.2.1",
+  "language": "zh-CN",
+  "languagePlugin": "com.intellij.zh 262.9437.185, official archive, unmodified",
+  "gradleSync": "Success at 21:20:27, 16.458 seconds",
+  "javaCompile": "PASS, JDK 21",
+  "javaGuideChecks": 11,
+  "javadoc": "PASS, no doclint errors",
+  "htmlFilesChecked": 50,
+  "brokenLocalLinks": 0,
+  "layoutWidthsChecked": [
+    1440,
+    390
+  ],
+  "horizontalOverflow": false,
+  "androidBuild": "BUILD SUCCESSFUL, incremental 43 UP-TO-DATE tasks",
+  "androidUnitTests": {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "execution": "existing passing results reused by Gradle UP-TO-DATE; not newly executed"
+  },
+  "adb": "no devices at documentation verification",
+  "newGpuTasks": 0,
+  "newPhoneTests": false,
+  "apkSha256": "5c4572d571872960fc0b7ad56f83202b8862bf2cfd375ea500c0435b07e197d8"
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "image_qwen_image_2_1_t2i.json",
+    "sha256": "716c98b979430b480c18fb6c2277def0df1093b97b32df465dd6cf450650c226"
+  },
+  {
+    "file": "Krea2文生图.json",
+    "sha256": "0c197c5fc5d47f3578238d1f8c0587751ca21e67c0f1e1c9e66816316848db6a"
+  },
+  {
+    "file": "Krea2角色设定表四视图.json",
+    "sha256": "8445f87bf920079c89d38cbc5364452c79964f970415c0e44ea6964fafdf65aa"
+  },
+  {
+    "file": "MiniMax_H3图生视频.json",
+    "sha256": "c2d336d8d085d9823f36393616e0da024b551e0ecf5a9e9037406c4269541788"
+  },
+  {
+    "file": "video_minimax_h3全能参考.json",
+    "sha256": "b91d6ab28d25302f12587715d6a91f5d52c631e68136489d95e3f70947f45a13"
+  },
+  {
+    "file": "图片放大修复_RFMSR.json",
+    "sha256": "6d66c78884fe19ba1b9adc38be8e1d35b349afa03c51ee27b5105899d266771a"
+  }
+]

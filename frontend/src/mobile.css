@@ -1,0 +1,41 @@
+/* Opt-in LAN UI. Desktop/QWebChannel layout is unchanged. */
+.lan-status {display:flex;gap:14px;align-items:center;padding:8px 14px;background:#fff7e6;font-size:12px;flex-shrink:0;flex-wrap:wrap;z-index:30}
+.lan-online {color:#22704b}
+.lan-connect {position:fixed;inset:50px 10px 12px;z-index:80;overflow:auto;padding:24px;max-width:620px;margin:auto;background:#fff}
+.lan-connect form {display:flex;flex-direction:column;gap:16px}
+.lan-connect label {display:flex;flex-direction:column;gap:6px}
+.lan-connect input {padding:12px;border:1px solid var(--line);border-radius:8px}
+.lan-connect p {line-height:1.7}
+@media(max-width:760px) {
+  body:has(.lan-shell) {min-width:0}
+  .lan-shell {padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+  .lan-shell .topbar {height:auto;min-height:64px;padding:10px;gap:8px;flex-wrap:wrap}
+  .lan-shell .topbar .brand strong,.lan-shell .top-divider,.lan-shell .save-status,.lan-shell .top-spacer {display:none}
+  .lan-shell .topbar .brand img {width:28px;height:28px}
+  .lan-shell .project-switch {max-width:calc(100% - 50px);font-size:13px;flex:1}
+  .lan-shell .top-generate,.lan-shell .assistant-toggle {min-height:40px;flex:1;justify-content:center}
+  .lan-shell .shell-body {flex-direction:column;min-height:0}
+  .lan-shell .sidebar {width:100%;flex-direction:row;overflow-x:auto;flex-shrink:0;padding:6px;gap:4px;border-right:0;border-bottom:1px solid var(--line)}
+  .lan-shell .sidebar-label,.lan-shell .sidebar-project,.lan-shell .workspace-signature {display:none}
+  .lan-shell .nav-item {min-width:max-content;width:auto;min-height:42px;padding:8px;font-size:12px;gap:5px}
+  .lan-shell .nav-item span {display:inline}
+  .lan-shell .sidebar-bottom {margin:0;padding:0}
+  .lan-shell .main-workspace {min-width:0;width:100%}
+  .lan-shell .workspace-content {padding:16px 12px 24px;max-width:100%}
+  .lan-shell .page-heading {align-items:flex-start;flex-direction:column;gap:12px}
+  .lan-shell .page-heading h1 {font-size:23px}
+  .lan-shell .page-heading-actions,.lan-shell .section-toolbar {flex-wrap:wrap;gap:8px}
+  .lan-shell .shot-body {grid-template-columns:1fr}
+  .lan-shell .shot-header {flex-wrap:wrap}
+  .lan-shell .asset-grid,.lan-shell .project-grid {grid-template-columns:1fr}
+  .lan-shell .assistant-panel {position:fixed;inset:110px 0 0;width:100%;z-index:40;max-width:none}
+  .lan-shell input,.lan-shell textarea,.lan-shell select {font-size:16px;max-width:100%}
+  .lan-shell .library-toolbar,.lan-shell .library-filters {flex-wrap:wrap}
+  .lan-shell .library-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lan-shell .workspace-bottom {display:none}
+  body:has(.lan-shell) .dialog-panel {max-width:calc(100vw - 16px);width:calc(100vw - 16px);max-height:92dvh}
+  body:has(.lan-shell) .form-grid {grid-template-columns:1fr}
+  body:has(.lan-shell) .dialog-content {overflow-x:hidden;padding:14px}
+  body:has(.lan-shell) .preview-stage {touch-action:pinch-zoom}
+  body:has(.lan-shell) .btn,body:has(.lan-shell) .icon-btn {min-height:40px}
+}

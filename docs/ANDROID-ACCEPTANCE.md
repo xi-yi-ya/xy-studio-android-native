@@ -1,0 +1,75 @@
+# Android 原生最小闭环验收（2026-10-22）
+
+本轮按最新优先级，只把原生 APK、真实项目、图片生成、图生视频、任务状态和播放作为核心验收。代码未 Push、未发布 Release 或 APK。Windows 原有项目格式未迁移，测试在独立新项目中执行，保留原项目与所有既有未提交文件。
+
+## 当前原生客户端更新
+
+2026-10-22 完成 `1.2.1-native-preview.4`：对话图片/视频引用、手机导入、角色新建与换图、分镜关联、回收站及恢复通过真机测试（21.466 秒）；导航与视频播放单独回归通过（19.987 秒），8 项单测通过。另已实际操作 Android 系统选择器选取 PNG 并核对 PC 落盘和附件状态。主 APK 已安装，详见 [桌面对照与本轮验收](ANDROID-DESKTOP-PARITY.md)。没有发送新的 AI 消息或生成请求。
+
+## preview.3 历史界面验收
+
+2026-10-22 20:26 完成 `1.2.1-native-preview.3` 界面回归：8 项单测、1 项真实项目导航测试通过，四栏导航、AI 全屏与草稿、两类生成表单、真实素材与视频播放通过。主 APK 和测试包已覆盖安装，SHA-256 一致，详见 [移动界面验收](ANDROID-MOBILE-DESIGN.md)。本轮不重复生成。
+
+## preview.2 历史生成验收
+
+2026-10-22 19:35 完成 `1.2.1-native-preview.2` 真机生成体验验收：分区参数表单、参考图搜索与数量提示、PC 输出确认、图片直接制作视频、新任务置顶与取消确认。8 项单测通过；实际新图片和新视频由手机 UI 提交，视频播放超过 1 秒。首轮图片后的脚本等待失败及分段恢复情况详见 [生成体验验收](ANDROID-GENERATION-UX.md)。该次 preview.2 交付 APK 与手机已安装 APK SHA-256 均为 `5dc0c617d3e39b1b60f8175e7b6b63e729032909bf76194841d7703b01ca97b2`。
+
+## 首版闭环与桌面验证记录（保留历史）
+
+| 项目 | 实际结果与证据 |
+|---|---|
+| 原生构建 | Kotlin 2.3.0 + Jetpack Compose；主界面无 WebView；Debug APK 构建成功、v2 签名验证通过 |
+| USB 真机 | ADB 识别 iQOO 9 / V2171A，Android 15 / API 35；覆盖安装与 `am start` 成功 |
+| 安装包一致性 | 手机已安装 base.apk 的 SHA-256 与交付 APK 相同：`f8450b9c11def3df423f28e8e5291a783a2e911345f3ca536ed42dd0f4fdf641` |
+| 实际局域网 | 手机 Wi-Fi `192.168.50.43` → PC `192.168.50.198:8767`；HTTP/WS，没有使用 `adb reverse` |
+| 连接与记忆 | 首次固定密码连接；退出进程后使用加密保存信息自动连接，`reuseOnly=true` 真机测试通过 |
+| 项目与素材 | 手机显示 PC 独立验收项目、真实 PNG 和 MP4；初始素材是此前真实生成文件的副本，未伪造生成任务 |
+| 图片生成 | 由手机原生参数界面确认提交 Qwen INT8，0.2 MP / 4 步；实际结果 608 × 352 PNG，状态 completed |
+| 图生视频 | 手机选择刚生成的图片，提交 H3 I2V，0.1 MP / 4 步 / 请求 2 秒；实际结果 416 × 256、24 fps、56 帧、2.333 秒 MP4 |
+| 真实状态 | 记录了真实节点变化，图片采样 1/4、2/4，视频采样 1/4、2/4、3/4；没有模拟总体百分比 |
+| 结果同步 | 输出进入同一 PC 项目原有 outputs、jobs 与素材库；手机库中出现新视频 |
+| 原生视频 | Media3 解码真实帧并播放至 1.288 秒；run7 OK (1 test)，6.286 秒；截图 `demo/evidence/iqoo9/08-native-playback-over-one-second.png` |
+| PC/桌面回归 | 145 项 Python 测试通过，包括原有 136 项、6 项 LAN 和 3 项内置面板测试；未宣称完整人工桌面回归 |
+| 桌面内置入口 | 侧栏“手机连接”；同一个 StudioService；启动/隐藏/停止/重启、固定密码保留、未共享项目隔离、远端不能调用本地按钮均通过测试；Vue TypeScript / Vite 构建通过 |
+| Windows 冻结包 | r3 包实际启动，通过侧栏按钮开启 `192.168.50.198:8771`，固定密码认证与 HTTP 真实项目读取 200；隐藏面板仍在线，退出 Studio 后端口停止；证据 `demo/evidence/desktop-lan-frozen.json` |
+| Android 网络单测 | 4 项通过：地址限制、Bearer / 64 位种子、未授权错误、媒体 URL 限制 |
+| 安全接口 | 自动化覆盖未授权访问、CORS、密码错误限流、令牌过期与撤销、文件越界、密钥隔离、项目授权、版本冲突、请求去重、原有审阅流程 |
+
+图片任务：`4a361a8e6b894348a145e7fd2506d195`；ComfyUI prompt ID：`3aa300d8-e29d-4b70-98f7-596e81c4611b`。
+
+视频任务：`963b38b41d0640b4a3a0e0014e12bc06`；ComfyUI prompt ID：`bbe5a62a-43b1-4cd6-9063-4731f63e8ee3`。
+
+原始输出保存在 `local-data/android-live-projects/iqoo9-minimal-20261022-184048/`。经过筛选的设备证据、文件校验值和节点记录在 `demo/evidence/iqoo9-native-live.json`。四步结果用于最低成本技术验证，不作为高质量图像或视频样片验收。
+
+## 真实失败和修复记录
+
+- USB 最初 unauthorized，随后一度仅枚举 MTP。Owner 在手机允许 USB 调试并重新插拔后，ADB Composite 接口出现；未修改系统驱动或手机设置。
+- iQOO 多次要求安装确认；改用标准 `adb install --no-streaming -r`，由 Owner 在手机允许。没有关闭安装保护。
+- 真机首次连接暴露 Compose 授权状态未触发底部导航更新；已改为可观察状态，同时连接时收起键盘。
+- Python 的默认临时目录出现 WinError 5。改用项目内唯一的测试临时目录后，142 项全部通过；未修改系统临时目录权限。
+- Instrumentation 曾在未预启动应用时等待，已改为先 `am start`。调试中手动停止本应用导致的 `Process crashed` 测试记录不算成功，也不作为生产应用崩溃结论。
+- 图片生成通过后，测试脚本在视频参考选择时匹配两个同名节点。修正为可点击参考条目后，从既有图片继续视频流程；没有重复生成图片来掩盖失败。
+- `run6` 真实设备流程为 **OK (1 test)**，耗时 30.906 秒；包括自动连接、既有真实图片读取、视频 UI 提交与播放。图片由前一次 `run5` 的 UI 提交完成，因此这是分段恢复的真实闭环，不宣称单次首次运行全部通过。
+- `run7` 不再提交生成任务，单独验证已记住的连接和视频播放超过 1 秒；**OK (1 test)**，6.286 秒，截图播放时钟 1.288 秒。
+- Windows 初次冻结包点击手机连接时 SSLContext 报缺失文件。定位到构建 Python 自带的 `codex-rejected-cas.pem` 未被 PyInstaller 收集；增加可选 ssl hook 原样打包该资源，未移除证书策略或关闭 TLS 验证。r3 真实运行通过。
+- 安装 Android Studio 后，自带 JBR 25 与当前 Gradle 8.14.3 构建失败；项目改用已有 JDK 21，重新构建通过且 APK 哈希不变。IDE 自身继续使用 JBR 25，未修改全局 Java 环境。
+- Owner 确认工程信任后，Android Studio 的真实 Gradle Sync 于 2026-10-22 19:20:42 成功，耗时 4 分 34.682 秒；完成依赖源码下载和索引，识别 app 配置、vivo V2171A，打开 MainActivity.kt。日志与界面证据见 `demo/evidence/android-studio-sync.txt` 和 `android-studio-sync.jpg`。
+
+## 尚未完成的验收
+
+- 断开 Wi-Fi、PC 服务重启、8 小时授权到期后的真机自动恢复，以及生成中取消任务，仍需专项验证；本轮没有改手机网络设置。
+- 原生角色、场景、分镜、AI 对话及操作审阅界面已有实现，PC 原有业务继续复用；尚未完成这些模块的全量真机验收，尤其 DeepSeek 实际对话与完整 Skill 流程。
+- 图像编辑、其他生成模式、大项目与长视频、横屏/其他机型、长时间后台恢复尚未专项验收。
+- HTTP 方案只面向可信局域网；尚无 TLS。固定密码只是访问控制，不防同网恶意监听。
+- PC 与手机共用当前项目/选中条目/Agent 会话，非多人独立工作台；并发写入串行化和版本冲突拒绝已有自动化覆盖。
+- 素材管理部分桌面高级操作尚未全部提供原生 UI，不能称为桌面全功能复刻。
+- 本轮演示录屏仍由 Owner 完成，按照 `demo/README.md` 录制。没有制作虚构运行截图或伪造成功记录。
+
+## 交付和回滚
+
+- 主 APK：`releases/android-native-preview/XY-Studio-Android-debug.apk`。
+- Kotlin 原生源码：`android-native/`；PC LAN 源码：`studio/lan/`。
+- Windows 主入口：本地预览版 Studio → 侧栏“手机连接”；独立入口保留 `scripts/start-lan.ps1`。本地 Windows 打包用 `scripts/build-lan-preview.ps1`；Android 构建和 USB 部署用 `scripts/build-android.ps1`、`scripts/deploy-android.ps1`。
+- 旧 Capacitor 试作保留在 `mobile/`，已停止开发，不属于最终 APK。
+- 日常使用当前 `8767` 服务窗口。旧测试服务使用 8765 / 8766，本轮重启旧服务的组合命令被自动审批拦截（仅返回 blocked by policy），故通过独立端口和新项目完成验收，未绕过该拦截。旧测试服务未强制清理。
+- 内置面板关闭只隐藏，停止按钮或退出 Studio 停止服务；独立 LAN 控制窗口关闭则停止对应服务。旧发布 EXE 保留可用。保留验收项目和生成结果，不通过删除项目或清空手机数据回滚。

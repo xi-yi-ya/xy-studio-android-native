@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+local-data/
+projects/
+build/
+dist/
+releases/
+*.spec
+.env*
+*.log
+frontend/dist-mobile/
