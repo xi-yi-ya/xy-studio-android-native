@@ -50,4 +50,4 @@
 - Owner 确认 Trust Project 后，IDE Gradle Sync 于 2026-10-22 19:20:42 成功完成，耗时 4 分 34.682 秒。首次同步下载了依赖源码与文档；日志记录 `onSuccess`、`onImportFinished` 和 `Gradle sync finished`，见 `demo/evidence/android-studio-sync.txt`。
 - IDE 已显示 `app` 运行配置和 `vivo V2171A` 手机，已打开并解析 `MainActivity.kt`。同步中的 SDK XML 版本警告未阻止成功；保留现有 AGP / Gradle / Kotlin 版本，没有执行 IDE 推荐的升级或迁移。
 
-所有源码、Windows 预览包、APK、安装文件仅保存在本机，未上传 GitHub。
+上述安装验收阶段的源码、Windows 预览包、APK 和安装文件均只保存在本机。2026-10-22 后续收到 Owner 新授权，另建 [xy-studio-android-native 私有仓库](https://github.com/xi-yi-ya/xy-studio-android-native) 归档 Android / PC LAN 源码、中文手册和 Debug APK；原仓库远端不变，不上传本机凭证、用户素材、SDK 或 IDE 安装文件。
