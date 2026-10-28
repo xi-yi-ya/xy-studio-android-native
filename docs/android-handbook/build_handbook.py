@@ -40,7 +40,7 @@ for name, role, route in FILES:
         match=re.search(r'\bfun\s+(?:[\w<>?]+\.)?(\w+)\s*\(',line)
         if match:methods.append(f'<a href="#L{i}">{escape(match[1])} · {i}</a>')
     java=f'../javadoc/cn/xiyi/handbook/StudioJavaGuide.{name}.html'
-    body=f'<p><a href="../java-guide.html#map">← 返回文件地图</a>　<a href="{java}">Java 职责对照</a></p><section><h2>{escape(role)}</h2><p>{escape(route)}</p><p class="small">2026-10-22 源码快照。真实位置：android-native/app/src/main/java/cn/xiyi/xystudio/{name}.kt。后续修改以 IDE 文件为准。</p><p>'+ ' · '.join(methods)+'</p></section>'+lines(text)
+    body=f'<p><a href="../java-guide.html#map">← 返回文件地图</a>　<a href="{java}">Java 职责对照</a></p><section><h2>{escape(role)}</h2><p>{escape(route)}</p><p class="small">2026-10-28 公开源码快照。真实位置：android-native/app/src/main/java/cn/xiyi/xystudio/{name}.kt。后续修改以 IDE 文件为准。</p><p>'+ ' · '.join(methods)+'</p></section>'+lines(text)
     (HERE/'source'/f'{name}.html').write_text(page(name+'.kt',body),encoding='utf-8')
     rows.append(f'<tr><td><a href="source/{name}.html">{name}.kt</a></td><td>{role}</td><td>{route}</td></tr>')
     manifest[str(path.relative_to(ROOT))]=hashlib.sha256(path.read_bytes()).hexdigest()

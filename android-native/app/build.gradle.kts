@@ -11,8 +11,8 @@ android {
         applicationId = "cn.xiyi.xystudio.nativeapp"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.2.1-native-preview.4"
+        versionCode = 5
+        versionName = "1.2.1-native-preview.5-pixstag"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true }
@@ -41,6 +41,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test:runner:1.7.0")
+    // Compose's older transitive Espresso reflects InputManager.getInstance,
+    // removed on API 37. Stable 3.7.0 uses Context.getSystemService instead.
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

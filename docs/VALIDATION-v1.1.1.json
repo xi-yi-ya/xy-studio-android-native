@@ -1,0 +1,164 @@
+{
+  "version": "1.1.1",
+  "validatedAtUtc": "2026-10-10T17:33:17.268510+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "qt": "6.12.0",
+    "platform": "win32",
+    "desktop": "Packaged Vue + QWebEngineView + QWebChannel",
+    "comfyPort": 8188
+  },
+  "pythonTests": {
+    "passed": 125,
+    "originalTestsRetained": true
+  },
+  "desktopTests": {
+    "sourcePassed": 15,
+    "packagedPassed": 15,
+    "realWindowsExe": true,
+    "seedRefresh": true,
+    "zeroStepsShowsActual40": true,
+    "modeSpecificStepDrafts": true,
+    "exact64BitSeed": true,
+    "existingFeatureCoverageRetained": true
+  },
+  "diagnosis": {
+    "originalTimesUtc": [
+      "2026-10-10T16:37:22.545148+00:00",
+      "2026-10-10T16:40:12.804255+00:00"
+    ],
+    "bothActualSteps": 40,
+    "badSeed": "42",
+    "goodSeed": "100",
+    "referenceFilesIdentical": true,
+    "controlComparisons": [
+      {
+        "case": "same-seed-empty",
+        "meanAbsolutePixelDifference": 0.0,
+        "maxDifference": 0,
+        "pixelsExactlyEqual": true
+      },
+      {
+        "case": "seed-100-source",
+        "meanAbsolutePixelDifference": 0.0,
+        "maxDifference": 0,
+        "pixelsExactlyEqual": true
+      },
+      {
+        "case": "seed-42-source-replay",
+        "meanAbsolutePixelDifference": 0.0,
+        "maxDifference": 0,
+        "pixelsExactlyEqual": true
+      }
+    ],
+    "conclusion": "For this exact model/prompt/reference combination seed 42 reproduces the failure; defaulting every request to 42 repeated it. Changing only the seed reproduces the good output. No internal model-level cause claimed."
+  },
+  "realInference": [
+    {
+      "environment": "source",
+      "kind": "Agent unchanged defaults",
+      "seed": "6431422273366169739",
+      "steps": 40,
+      "actualSize": [
+        1376,
+        768
+      ],
+      "followPrimaryReference": true,
+      "measuredUiSamples": 291,
+      "sha256": "200d90261e6ef99adbd520e9b6496863118e043c57178414667124d9a9b4c887",
+      "visualReview": "Normal stage and foreground character; no original global oversharpening/noisy failure",
+      "model": "deepseek-flash"
+    },
+    {
+      "environment": "source",
+      "kind": "Manual new default seed",
+      "seed": "6660429818380797826",
+      "steps": 40,
+      "actualSize": [
+        1376,
+        768
+      ],
+      "followPrimaryReference": true,
+      "measuredUiSamples": 94,
+      "sha256": "573bbc929ea539eeb94c3885384fad6a0003e79993e6f5f4548263c3091cf038",
+      "visualReview": "Normal stage and foreground character; no original global oversharpening/noisy failure",
+      "model": "deepseek-flash"
+    },
+    {
+      "environment": "package",
+      "kind": "Agent unchanged defaults",
+      "seed": "2027358240259390705",
+      "steps": 40,
+      "actualSize": [
+        1376,
+        768
+      ],
+      "followPrimaryReference": true,
+      "measuredUiSamples": 293,
+      "sha256": "51adfa9bf55e17ccd839cd2eb5821eaf43623b9fda8fdf89cb78791243c43860",
+      "visualReview": "Normal stage and foreground character; no original global oversharpening/noisy failure",
+      "model": "deepseek-flash"
+    },
+    {
+      "environment": "package",
+      "kind": "Manual new default seed",
+      "seed": "7463050674198769125",
+      "steps": 40,
+      "actualSize": [
+        1376,
+        768
+      ],
+      "followPrimaryReference": true,
+      "measuredUiSamples": 181,
+      "sha256": "c16252e1faa0624504ee6d798426dcd5f8a27a50c0433800b077789e4f4089ce",
+      "visualReview": "Normal stage and foreground character; no original global oversharpening/noisy failure",
+      "model": "deepseek-flash"
+    }
+  ],
+  "legacyReadback": {
+    "passed": true,
+    "frozenVersion": "1.0.0",
+    "openedNewProject": true,
+    "schema": 1,
+    "completedJobs": 2,
+    "versions": 3,
+    "idsUnchanged": true,
+    "previewAndSave": true
+  },
+  "frontendBundleMatchesSource": true,
+  "exit": {
+    "comfyAlive": true,
+    "queueRunning": 0,
+    "allExited": true,
+    "queuePending": 0,
+    "comfyProcessId": 93516,
+    "ownedProcessIds": [
+      90080,
+      83988,
+      100320,
+      70136,
+      101940,
+      90160,
+      101076
+    ]
+  },
+  "preservedReleases": {
+    "v1.0.0": {
+      "archiveUnchanged": true,
+      "sha256": "71fa1a95e5fd8b75576e6294524524984fe1a1614a028092177c6321689211f0"
+    },
+    "v1.1.0": {
+      "archiveUnchanged": true,
+      "sha256": "036ccf88c27318401bf9b2875080a1fa35f936ee2099d58fe56a9e254e7fa8ea"
+    }
+  },
+  "scope": {
+    "newRequestsRandomized": true,
+    "explicitAndHistoricalSeedsPreserved": true,
+    "oldUserOutputsPreserved": true,
+    "projectSchema": 1,
+    "noModelOrComfyCodeChanges": true,
+    "noAutomaticVideoPipeline": true,
+    "notAGuaranteeOfEverySeedsImageQuality": true
+  }
+}

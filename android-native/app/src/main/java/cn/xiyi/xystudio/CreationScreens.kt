@@ -36,7 +36,7 @@ import org.json.JSONObject
     OutlinedTextField(value,onChange,label={Text(label)},singleLine=true,keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Decimal),modifier=modifier.fillMaxWidth())
 }
 
-private val statusNames=mapOf("new" to "等待提交","submitting" to "正在提交","queued" to "ComfyUI 排队中","running" to "正在生成","downloading" to "保存结果到 PC","completed" to "已完成","cancelled" to "已取消","cancel_requested" to "正在取消","failed" to "失败","unknown" to "状态未知，需核对","detached" to "查询已中断")
+private val statusNames=mapOf("new" to "等待提交","submitting" to "正在提交","queued" to "后端排队中","running" to "正在生成","downloading" to "保存结果到 PC","completed" to "已完成","cancelled" to "已取消","cancel_requested" to "正在取消","failed" to "失败","unknown" to "状态未知，需核对","detached" to "查询已中断")
 @Composable fun TasksScreen(vm:StudioViewModel) {
     if(EmptyProject(vm))return
     var filter by remember { mutableStateOf("all") }
@@ -62,6 +62,8 @@ private val statusNames=mapOf("new" to "等待提交","submitting" to "正在提
                 Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
                     Text(task.optString("targetName"),style=MaterialTheme.typography.titleMedium)
                     val g=task.optJSONObject("generation")
+                    val cloud=GenerationRules.isCloud(g?.optString("mode") ?: "")
+                    val remoteId=task.optString("remoteId","").takeUnless{it=="null"} ?: ""
                     Text("${if(task.optString("kind")=="video")"视频" else "图片"} · ${vm.state.optJSONObject("catalog")?.optJSONObject("modes")?.optString(g?.optString("mode") ?: "") ?: ""}",style=MaterialTheme.typography.labelMedium)
                     Text(statusNames[status] ?: status,color=MaterialTheme.colorScheme.primary)
                     if(!task.isNull("progress")) {
@@ -70,9 +72,10 @@ private val statusNames=mapOf("new" to "等待提交","submitting" to "正在提
                         Text("节点 ${task.optString("node")} · ${(progress*100).toInt()}%（当前节点，不是总体进度）",style=MaterialTheme.typography.labelSmall)
                     } else if(status in listOf("running","queued","submitting","downloading")) {
                         LinearProgressIndicator(Modifier.fillMaxWidth())
-                        Text("PC 尚未返回节点步数，不估算百分比。",style=MaterialTheme.typography.labelSmall)
+                        Text(if(cloud)"Pixstag 仅返回任务阶段，不提供总体百分比。" else "PC 尚未返回节点步数，不估算百分比。",style=MaterialTheme.typography.labelSmall)
                     }
                     Text(task.optString("prompt"),maxLines=5,style=MaterialTheme.typography.bodySmall)
+                    if(cloud)Text("Pixstag · ${g?.optString("api_model")} · 任务 ID：${remoteId.ifEmpty{"尚未取得"}}。已提交任务无取消接口，停止查询不停止计费。",style=MaterialTheme.typography.bodySmall)
                     TextButton(onClick={details=task}){Text("查看完整参数")}
                     if(task.optString("error").isNotBlank()&&task.optString("error")!="null")Text(task.optString("error"),color=MaterialTheme.colorScheme.error,style=MaterialTheme.typography.bodySmall)
                     task.rows("results").forEach { v ->
@@ -81,9 +84,10 @@ private val statusNames=mapOf("new" to "等待提交","submitting" to "正在提
                         if(v.optString("kind")=="image")OutlinedButton(onClick={vm.openGeneration("video",reference=v.getString("file"))},enabled=vm.connected&&!vm.working,modifier=Modifier.testTag("imageToVideo:${v.getString("file")}")){Text("用此图制作视频")}
                     }
                     Row(Modifier.horizontalScroll(rememberScrollState())) {
-                        if(status in listOf("new","queued","running"))TextButton(onClick={cancelling=task},enabled=!vm.working&&vm.connected){Text("取消任务")}
-                        if(status in listOf("unknown","detached","queued","running","failed"))TextButton(onClick={vm.command("task.resume",obj("id" to task.getString("id")))},enabled=!vm.working){Text("恢复查询")}
-                        TextButton(onClick={vm.openGeneration(task.optString("kind"),task.optJSONObject("generation"))},enabled=!vm.working){Text("审阅后再次生成")}
+                        if(task.optBoolean("canCancel",!cloud&&status in listOf("new","queued","running")))TextButton(onClick={cancelling=task},enabled=!vm.working&&vm.connected){Text("取消任务")}
+                        if(task.optBoolean("canDetach"))TextButton(onClick={vm.command("task.detach",obj("id" to task.getString("id")))},enabled=!vm.working&&vm.connected){Text("停止本机查询（云端继续）")}
+                        if(status in listOf("unknown","detached","queued","running","failed") && vm.state.optString("activeJob")!=task.optString("id"))TextButton(onClick={vm.command("task.resume",obj("id" to task.getString("id")))},enabled=!vm.working&&(!cloud||remoteId.isNotEmpty())){Text("恢复查询")}
+                        TextButton(onClick={vm.openGeneration(task.optString("kind"),task.optJSONObject("generation"))},enabled=!vm.working&&!(cloud&&status=="unknown"&&remoteId.isEmpty())){Text("审阅后再次生成")}
                     }
                     Text(task.optString("time").take(19),style=MaterialTheme.typography.labelSmall)
                 }
@@ -93,8 +97,9 @@ private val statusNames=mapOf("new" to "等待提交","submitting" to "正在提
     details?.let { task -> AlertDialog(onDismissRequest={details=null},title={Text("任务参数")},text={Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(8.dp)) {
         androidx.compose.foundation.text.selection.SelectionContainer { Text(task.optString("prompt")) }
         task.optJSONObject("generation")?.let { g ->
-            listOf("mode" to "工作流","ratio" to "比例","megapixels" to "像素量 MP","seconds" to "请求秒数","steps" to "步数","seed" to "种子","scale" to "放大倍率","cinema" to "电影风格","cinema_strength" to "电影风格强度","qwen_int8" to "INT8","edit_follow_source" to "跟随参考尺寸","quad_lora" to "四视图 LoRA").forEach { (key,label) -> if(g.has(key))Text("$label：${g.optString(key)}") }
+            (if(GenerationRules.isCloud(g.optString("mode")))listOf("mode" to "方式","api_model" to "模型","api_resolution" to "清晰度","ratio" to "比例","seconds" to "请求秒数","api_context_ir" to "提示词优化","api_watermark" to "水印","api_last_frame" to "请求尾帧") else listOf("mode" to "工作流","ratio" to "比例","megapixels" to "像素量 MP","seconds" to "请求秒数","steps" to "步数","seed" to "种子","scale" to "放大倍率","cinema" to "电影风格","cinema_strength" to "电影风格强度","qwen_int8" to "INT8","edit_follow_source" to "跟随参考尺寸","quad_lora" to "四视图 LoRA")).forEach { (key,label) -> if(g.has(key))Text("$label：${g.optString(key)}") }
             Text("参考图片：${g.strings("references").size} 张")
+            if(GenerationRules.isCloud(g.optString("mode")))Text("参考视频：${g.strings("video_references").size} 个")
         }
     }},confirmButton={TextButton(onClick={details=null}){Text("关闭")}}) }
     cancelling?.let { task -> AlertDialog(onDismissRequest={cancelling=null},title={Text("取消这个任务？")},text={Text("${task.optString("targetName")} 将向 PC 请求取消；已经保存的结果会保留。")},confirmButton={TextButton(onClick={vm.command("task.cancel",obj("id" to task.getString("id")));cancelling=null}){Text("确认取消")}},dismissButton={TextButton(onClick={cancelling=null}){Text("继续生成")}}) }

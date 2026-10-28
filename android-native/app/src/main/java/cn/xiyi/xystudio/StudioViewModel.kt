@@ -169,10 +169,12 @@ class StudioViewModel(app: Application): AndroidViewModel(app) {
         val g=previous?.copyJson() ?: call("generation.defaults",args) as JSONObject
         if(reference!=null)g.put("references",JSONArray(listOf(reference)))
         val records=mutableListOf<JSONObject>()
-        var more=true
-        while(more) {
-            val r=call("library.query",obj("kind" to "image","limit" to 100,"offset" to records.size)) as JSONObject
-            records.addAll(r.rows("items"));more=r.optBoolean("hasMore")
+        for(referenceKind in (if(GenerationRules.isVideo(g.optString("mode")))listOf("image","video") else listOf("image"))) {
+            var more=true;var offset=0
+            while(more) {
+                val r=call("library.query",obj("kind" to referenceKind,"limit" to 100,"offset" to offset)) as JSONObject
+                val rows=r.rows("items");records.addAll(rows);offset+=rows.size;more=r.optBoolean("hasMore") && rows.isNotEmpty()
+            }
         }
         references=records; preview=null; generation=g; generationReviewId=reviewId;generationTarget=target
     }

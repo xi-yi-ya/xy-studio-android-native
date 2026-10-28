@@ -36,7 +36,14 @@ export interface Generation {
   styles: string[];
   scale: number;
   references: string[];
+  api_model?: string;
+  api_resolution?: string;
+  api_watermark?: boolean;
+  api_context_ir?: boolean;
+  api_last_frame?: boolean;
+  video_references?: string[];
 }
+export const isVideoMode = (mode: string) => mode.startsWith('h3') || mode.startsWith('pixstag_');
 export interface Version {
   id: string;
   media: string;
@@ -93,6 +100,10 @@ export interface Task {
   outputs: string[];
   results: Version[];
   raw: unknown;
+  provider?: string;
+  remoteId?: string;
+  canCancel?: boolean;
+  canDetach?: boolean;
 }
 export interface Suggestion {
   id: string;
@@ -165,12 +176,13 @@ export interface LibraryResult {
 }
 export interface State {
   version: string;
-  config: { comfy: string; model: string; models: string[]; online: boolean; keySet: boolean };
+  config: { comfy: string; model: string; models: string[]; online: boolean; keySet: boolean; pixstagKeySet?: boolean };
   catalog: {
     modes: Record<string, string>;
     ratios: string[];
     styles: Record<string, string>;
     skills: unknown;
+    pixstag?: { models: string[]; ratios: string[]; resolutions: string[] };
   };
   recent: { path: string; title: string }[];
   selectedId: string | null;

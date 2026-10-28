@@ -28,7 +28,7 @@ FIELDS = {
     'asset.delete': {'id'}, 'asset.reviewed': {'id'}, 'version.use': {'id','version'},
     'generation.defaults': {'target','mode','kind'}, 'generation.seed': set(),
     'generation.preview': {'generation'}, 'generation.submit': {'target','generation','name'},
-    'queue.toggle': set(), 'task.cancel': {'id'}, 'task.resume': {'id'},
+    'queue.toggle': set(), 'task.cancel': {'id'}, 'task.resume': {'id'}, 'task.detach': {'id'},
     'chat.send': {'text'}, 'review.respond': {'id','accepted','generation'},
 }
 CONFLICT_CHECK = {'project.story', 'asset.update', 'asset.rename', 'asset.link',
@@ -45,6 +45,10 @@ class Host(QObject):
         self.service = service
         self.project_home = Path(project_home).resolve()
         self.allowed = {}
+        # Only the embedded desktop enables this while its LAN server is running.
+        # Standalone hosts keep explicit project authorization.
+        self.follow_current = False
+        self._desktop_projects = []
         self.revision = 0
         self.document = ''
         self.media = {}
@@ -56,7 +60,7 @@ class Host(QObject):
         root = Path(path).resolve()
         if root.name == 'project.json': root = root.parent
         data = json.loads((root/'project.json').read_text(encoding='utf-8'))
-        if data.get('schema') != 1: raise ValueError('不支持的项目格式')
+        if not isinstance(data, dict) or data.get('schema') != 1: raise ValueError('不支持的项目格式')
         ident = next((i for i, p in self.allowed.items() if p == root), None) or uid()
         self.allowed[ident] = root
         self._changed()
@@ -65,10 +69,46 @@ class Host(QObject):
     def current_allowed(self):
         return self.service.project and self.service.project.root in self.allowed.values()
 
+    def follow_desktop_projects(self):
+        """Share Studio's registered projects, never scan the user's filesystem.
+
+        Keep the catalogue separately from the 12-entry recent-projects menu.
+        Unavailable entries stay registered and are checked again on next start.
+        """
+        try:
+            saved = json.loads(self.service.settings.value('lan/project_catalog', '[]'))
+        except (ValueError, TypeError):
+            saved = []
+        if not isinstance(saved, list): saved = []
+        paths = [*saved, *(r.get('path') for r in self.service.recent if isinstance(r, dict))]
+        self._desktop_projects = list(dict.fromkeys(p for p in paths if isinstance(p, str) and p))
+        for path in self._desktop_projects:
+            try:
+                self.authorize(path)
+            except (OSError, ValueError, KeyError, TypeError):
+                # Missing/removable/corrupt projects must not prevent LAN start.
+                continue
+        self.follow_current = True
+        self._changed()
+        self._remember_desktop_projects()
+
+    def _remember_desktop_projects(self):
+        paths = list(dict.fromkeys([*self._desktop_projects, *(str(p) for p in self.allowed.values())]))
+        raw = json.dumps(paths, ensure_ascii=False)
+        if self.service.settings.value('lan/project_catalog', '') != raw:
+            self.service.settings.setValue('lan/project_catalog', raw)
+        self._desktop_projects = paths
+
     def _changed(self, *_):
         # Only editable document fields count. Progress and chat do not invalidate
         # a text editor while a render is running.
         p = self.service.project
+        if self.follow_current and p and not self.current_allowed():
+            # StudioService.load has already validated and locked this project.
+            # Register it before broadcasting so phones receive the new project
+            # in the same update; never enumerate or expose unopened folders.
+            self.allowed[uid()] = p.root
+            self._remember_desktop_projects()
         doc = json.dumps({k:p.data.get(k) for k in ('id','story','characters','scenes','shots')}, sort_keys=True) if p else ''
         digest = hashlib.sha256(doc.encode()).hexdigest()
         if digest != self.document:

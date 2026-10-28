@@ -22,6 +22,18 @@ MODES = {'qwen': 'Qwen 图片生成', 'qwen_edit': 'Qwen 图片编辑',
          'h3_i2v': 'H3 图生视频', 'h3_ref': 'H3 参考生视频',
          'h3_t2v': 'H3 文生视频', 'h3_fl2v': 'H3 首尾帧视频', 'upscale': 'RFMSR 高清放大'}
 RATIOS = ['1:1', '2:3', '3:2', '3:4', '4:3', '9:16', '16:9', '21:9']
+API_MODES = {'pixstag_t2v': 'Pixstag 文生视频', 'pixstag_i2v': 'Pixstag 图生视频',
+             'pixstag_fl2v': 'Pixstag 首尾帧视频', 'pixstag_ref': 'Pixstag 多模态参考视频'}
+API_MODELS = ['MiniMax-H3', 'doubao-seedance-2', 'doubao-seedance-2-5']
+API_RATIOS = ['adaptive', '21:9', '16:9', '4:3', '1:1', '3:4', '9:16']
+API_RESOLUTIONS = ['720P', '768P', '1080P', '2K']
+MODES.update(API_MODES)
+
+
+def is_api(mode): return mode in API_MODES
+
+
+def is_video(mode): return mode.startswith('h3') or is_api(mode)
 
 def new_seed():
     """Choose once for a new request; queued/recovered jobs retain that value."""
@@ -30,7 +42,7 @@ def new_seed():
 def default_steps(mode):
     if mode not in MODES:
         raise ValueError('未知工作流')
-    return 40 if mode.startswith('qwen') else 10 if mode=='quad' else 15 if mode=='upscale' else 8
+    return 0 if is_api(mode) else 40 if mode.startswith('qwen') else 10 if mode=='quad' else 15 if mode=='upscale' else 8
 
 def resolution(ratio, mp, multiple=32):
     if ratio not in RATIOS or not .1 <= mp <= 16:
@@ -63,10 +75,38 @@ class Generation:
     # Defaults retain original BF16 workflow. Explicit low-memory option available.
     qwen_int8: bool = False
     edit_follow_source: bool = True
+    api_model: str = 'MiniMax-H3'
+    api_resolution: str = '720P'
+    api_watermark: bool = False
+    api_context_ir: bool = True
+    api_last_frame: bool = True
+    video_references: list[str] = field(default_factory=list)
 
     def validate(self):
         if type(self.edit_follow_source) is not bool: raise ValueError('编辑输出尺寸选项无效')
         if self.mode not in MODES: raise ValueError('未知工作流')
+        if is_api(self.mode):
+            if not isinstance(self.prompt, str) or not self.prompt.strip() or len(self.prompt) > 5000:
+                raise ValueError('Pixstag 提示词须为 1–5000 个字符')
+            if self.api_model not in API_MODELS or self.api_resolution not in API_RESOLUTIONS:
+                raise ValueError('Pixstag 模型或分辨率无效')
+            if self.ratio not in API_RATIOS: raise ValueError('Pixstag 不支持此画面比例')
+            if isinstance(self.seconds, bool) or not isinstance(self.seconds, (int, float)) or not 4 <= self.seconds <= 30 or int(self.seconds) != self.seconds:
+                raise ValueError('Pixstag 时长须为 4–30 的整数秒')
+            if any(type(v) is not bool for v in (self.api_watermark, self.api_context_ir, self.api_last_frame)):
+                raise ValueError('Pixstag 开关参数无效')
+            for refs in (self.references, self.video_references):
+                if not isinstance(refs, list) or any(not isinstance(r, str) or not r for r in refs) or len(set(refs)) != len(refs):
+                    raise ValueError('参考素材列表无效或有重复项')
+            minimum, maximum = {'pixstag_t2v':(0,0), 'pixstag_i2v':(1,1), 'pixstag_fl2v':(2,2), 'pixstag_ref':(0,9)}[self.mode]
+            if not minimum <= len(self.references) <= maximum:
+                raise ValueError(f'此模式需要 {minimum}–{maximum} 张参考图片，首尾帧按顺序选择')
+            if len(self.video_references) > (3 if self.mode == 'pixstag_ref' else 0):
+                raise ValueError('仅多模态模式支持参考视频，客户端最多选择 3 个')
+            if self.mode == 'pixstag_ref' and not (self.references or self.video_references):
+                raise ValueError('请选择至少一张参考图片或一个参考视频')
+            return self
+        if self.video_references: raise ValueError('本地工作流不支持参考视频')
         resolution(self.ratio, self.megapixels)
         frames(self.seconds)
         if not 0 <= self.seed < 2**63: raise ValueError('种子必须为 0 至 2^63-1')
@@ -83,6 +123,7 @@ class Generation:
 
 def build(g: Generation, uploaded: list[str], prefix='AIStoryStudio'):
     g.validate()
+    if is_api(g.mode): raise ValueError('Pixstag 任务必须由云端 API 执行')
     if len(uploaded) != len(g.references): raise ValueError('上传引用数不匹配')
     graph = {}
     def node(name, kind, **inputs):

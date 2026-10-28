@@ -36,7 +36,7 @@ class DesktopLanControl(QWidget):
         self.setWindowTitle('XY Studio · 手机连接')
         self.resize(620, 440)
         layout = QVBoxLayout(self)
-        intro = QLabel('与手机共用当前 Studio 后端。启动时共享当前项目；切换到其他项目后需再次共享。')
+        intro = QLabel('服务开启后，手机可浏览 Studio 已登记的全部项目，打开或新建项目会自动加入列表。两端共用当前项目，切换后自动跟随，无需再次共享。')
         intro.setWordWrap(True)
         layout.addWidget(intro)
         row = QHBoxLayout()
@@ -61,12 +61,9 @@ class DesktopLanControl(QWidget):
         self.status.setWordWrap(True)
         self.status.setTextInteractionFlags(Qt.TextSelectableByMouse)
         layout.addWidget(self.status, 1)
-        self.toggle_button = QPushButton('启动局域网服务并共享当前项目')
+        self.toggle_button = QPushButton('启动局域网服务并自动同步')
         self.toggle_button.clicked.connect(self.toggle)
         layout.addWidget(self.toggle_button)
-        self.share_button = QPushButton('共享当前打开的项目')
-        self.share_button.clicked.connect(self.share_current)
-        layout.addWidget(self.share_button)
         self.revoke_button = QPushButton('更换固定密码并撤销全部设备')
         self.revoke_button.clicked.connect(self.revoke)
         layout.addWidget(self.revoke_button)
@@ -85,13 +82,20 @@ class DesktopLanControl(QWidget):
             raise ValueError('请选择 PC 的私有 IPv4 地址；不允许绑定公网或 0.0.0.0')
         password = keyring.get_password('XY Studio LAN', 'connection-password')
         pairing = Pairing(password, lambda value: keyring.set_password('XY Studio LAN', 'connection-password', value))
-        if self.service.project: self.host.authorize(self.service.project.root)
-        self.server = LanServer(self.host, bind, self.port.value(), pairing=pairing)
+        self.host.follow_desktop_projects()
+        try:
+            self.server = LanServer(self.host, bind, self.port.value(), pairing=pairing)
+        except Exception:
+            self.host.follow_current = False
+            self.host.allowed.clear()
+            self.host.media.clear()
+            raise
         self.service.settings.setValue('lan/bind', bind)
         self.service.settings.setValue('lan/port', self.port.value())
         self.refresh()
 
     def stop(self):
+        self.host.follow_current = False
         if self.server:
             self.server.close()
             self.server = None
@@ -106,14 +110,6 @@ class DesktopLanControl(QWidget):
         except Exception as exc:
             QMessageBox.warning(self, '局域网服务', f'{exc}\n若端口被占用，请先停止原服务或选择其他端口。')
 
-    def share_current(self):
-        try:
-            if not self.service.project: raise ValueError('请先在 Studio 打开项目')
-            self.host.authorize(self.service.project.root)
-            self.refresh()
-        except Exception as exc:
-            QMessageBox.warning(self, '共享项目', str(exc))
-
     def revoke(self):
         if self.server:
             self.server.revoke()
@@ -123,8 +119,7 @@ class DesktopLanControl(QWidget):
         running = self.server is not None
         self.bind.setEnabled(not running)
         self.port.setEnabled(not running)
-        self.toggle_button.setText('停止局域网服务' if running else '启动局域网服务并共享当前项目')
-        self.share_button.setEnabled(running and self.service.project is not None)
+        self.toggle_button.setText('停止局域网服务' if running else '启动局域网服务并自动同步')
         self.revoke_button.setEnabled(running)
         if not running:
             self.status.setText('服务未启动。桌面业务可以照常使用。')
@@ -134,9 +129,8 @@ class DesktopLanControl(QWidget):
         project = self.service.project
         self.status.setText(f'手机地址：{server.base}\n固定连接密码：{server.pairing.code}\n'
                             f'已授权设备：{"、".join(sorted(devices)) or "无"} · 在线连接：{len(server.clients)}\n'
-                            f'共享项目：{len(self.host.allowed)} 个\n'
-                            f'当前项目：{project.data["title"] if project else "未打开"}'
-                            f'（{"已共享" if self.host.current_allowed() else "未共享"}）')
+                            f'全部已登记项目：{len(self.host.allowed)} 个可访问 · 自动跟随已开启\n'
+                            f'当前项目：{project.data["title"] if project else "尚未打开，可在 PC 或手机项目列表选择"}')
 
     def closeEvent(self, event):
         self.hide()

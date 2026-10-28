@@ -18,8 +18,10 @@ from PySide6.QtWidgets import QFileDialog
 
 from . import __version__
 from .storage import Project, atomic_json, uid, now, LIBRARY_TARGET
-from .workflows import Generation, MODES, RATIOS, STYLES, resolution, frames, new_seed, default_steps
+from .workflows import (Generation, MODES, RATIOS, STYLES, resolution, frames, new_seed,
+                        default_steps, is_api, is_video, API_MODELS, API_RATIOS, API_RESOLUTIONS)
 from .comfy import Comfy, execute
+from .pixstag import Pixstag, execute as execute_pixstag, prepare as prepare_pixstag, normalize_key
 from .deepseek import chat, list_models, DEFAULT_MODELS, validate_action
 from .action_targets import resolve_target
 from .research import safe_link
@@ -129,7 +131,7 @@ class StudioService(QObject):
                 for relative in outputs:
                     self.project.attach_output(j, relative)
                 if outputs:
-                    self.notify('已保存到'+('视频库' if j['generation']['mode'].startswith('h3') else '图片库')+'，请选择满意的结果添加到资产或分镜。')
+                    self.notify('已保存到'+('视频库' if is_video(j['generation']['mode']) else '图片库')+'，请选择满意的结果添加到资产或分镜。')
             else:
                 journal = self.project.file('jobs/'+j['id']+'.json')
                 if journal.exists():
@@ -156,6 +158,12 @@ class StudioService(QObject):
             else:
                 self.last_error = result['error']
                 self.notify(result['error'])
+        elif kind == 'pixstag-check':
+            if result['ok']:
+                account = result['value']
+                self.status = f"Pixstag 连接成功 · 可用积分 {account.get('credit', '未知')} · 冻结积分 {account.get('credit_frozen', '未知')}"
+            else:
+                self.last_error = result['error']; self.notify(result['error'])
         elif kind == 'cancel':
             if result['ok']:
                 ident, state = result['value']
@@ -261,11 +269,11 @@ class StudioService(QObject):
         model = self.settings.value('model', DEFAULT_MODELS[0])
         if model not in models:
             models.append(model)
-        config = {'comfy': self.settings.value('comfy', 'http://127.0.0.1:8188'), 'model': model, 'models': models, 'online': self.settings.value('online_search', True, type=bool), 'keySet': bool(keyring.get_password('AIStoryStudio', 'deepseek'))}
+        config = {'comfy': self.settings.value('comfy', 'http://127.0.0.1:8188'), 'model': model, 'models': models, 'online': self.settings.value('online_search', True, type=bool), 'keySet': bool(keyring.get_password('AIStoryStudio', 'deepseek')), 'pixstagKeySet': bool(keyring.get_password('AIStoryStudio', 'pixstag'))}
         attachments = []
         for media in self.media_context:
             attachments.append(dict(media, media=self.media_url(media['file']) if media['kind']=='image' else ''))
-        state = {'version': __version__, 'config': config, 'catalog': {'modes': MODES, 'ratios': RATIOS, 'styles': STYLES, 'skills': CATALOG}, 'recent': self.recent, 'selectedId': self.selected, 'contextIds': list(self.context_ids), 'mediaContext': attachments, 'activeJob': self.active['id'] if self.active else None, 'busy': bool('chat' in self.workers or self.batch or self.pending), 'modelsBusy': 'models' in self.workers, 'status': public_status(self.status), 'error': self.last_error, 'review': self.pending, 'project': None}
+        state = {'version': __version__, 'config': config, 'catalog': {'modes': MODES, 'ratios': RATIOS, 'styles': STYLES, 'skills': CATALOG, 'pixstag': {'models':API_MODELS, 'ratios':API_RATIOS, 'resolutions':API_RESOLUTIONS}}, 'recent': self.recent, 'selectedId': self.selected, 'contextIds': list(self.context_ids), 'mediaContext': attachments, 'activeJob': self.active['id'] if self.active else None, 'busy': bool('chat' in self.workers or self.batch or self.pending), 'modelsBusy': 'models' in self.workers, 'status': public_status(self.status), 'error': self.last_error, 'review': self.pending, 'project': None}
         if not self.project:
             return state
         p = self.project
@@ -290,9 +298,9 @@ class StudioService(QObject):
                         except Exception as e:
                             duration_label = '时长读取失败：'+str(e)
                     else:
-                        previous = [j for j in p.data['jobs'] if j['target'] == item['id'] and j['generation']['mode'].startswith('h3')]
+                        previous = [j for j in p.data['jobs'] if j['target'] == item['id'] and is_video(j['generation']['mode'])]
                         if previous:
-                            duration = frames(previous[-1]['generation']['seconds'])/24
+                            duration = previous[-1]['generation']['seconds'] if is_api(previous[-1]['generation']['mode']) else frames(previous[-1]['generation']['seconds'])/24
                             duration_label = f'预计 {duration:.2f} 秒'
                     jobs = [j for j in p.data['jobs'] if j['target'] == item['id']]
                     refs = jobs[-1]['generation'].get('references', []) if jobs else []
@@ -324,7 +332,7 @@ class StudioService(QObject):
                     kind = 'video' if Path(relative).suffix.lower() in ('.mp4', '.webm', '.mkv') else 'image'
                     version = self._version({'id':f"result-{j['id']}-{index}", 'job':j['id'], 'file':relative, 'kind':kind, 'time':j.get('created',''), 'intent':j['generation']['prompt']})
                 results.append(version)
-            tasks.append({'id': j['id'], 'targetId': j['target'], 'targetName': target_name, 'kind': 'video' if j['generation']['mode'].startswith('h3') else 'image', 'status': j['status'], 'progress': progress['value']/progress['max']*100 if progress and progress.get('max') else None, 'node': j.get('node'), 'steps': progress, 'prompt': j['generation']['prompt'], 'time': j.get('created', ''), 'error': j.get('error'), 'generation': self.wire_generation(dict(j['generation'],edit_follow_source=j.get('edit_follow_source',False))), 'outputs': [self.media_url(r) for r in j.get('outputs', [])], 'results':results, 'raw': j})
+            tasks.append({'id': j['id'], 'targetId': j['target'], 'targetName': target_name, 'kind': 'video' if is_video(j['generation']['mode']) else 'image', 'status': j['status'], 'progress': progress['value']/progress['max']*100 if progress and progress.get('max') else None, 'node': j.get('node'), 'steps': progress, 'prompt': j['generation']['prompt'], 'time': j.get('created', ''), 'error': j.get('error'), 'generation': self.wire_generation(dict(j['generation'],edit_follow_source=j.get('edit_follow_source',False))), 'provider': 'pixstag' if is_api(j['generation']['mode']) else 'comfy', 'remoteId': j.get('prompt_id'), 'canCancel': j['status']=='new' or (not is_api(j['generation']['mode']) and j['status'] in ('queued','running','cancel_requested')), 'canDetach': is_api(j['generation']['mode']) and self.active is j and bool(j.get('prompt_id')) and j['status'] in ('queued','running'), 'outputs': [self.media_url(r) for r in j.get('outputs', [])], 'results':results, 'raw': j})
         state['project'] = {'id': p.data['id'], 'name': p.data['title'], 'root': str(p.root), 'story': p.data['story'], 'updated': p.data.get('updated', ''), 'assets': assets, 'shots': shots, 'tasks': tasks, 'chat': messages, 'paused': p.data.get('queue_paused', False)}
         return state
 
@@ -332,7 +340,7 @@ class StudioService(QObject):
         self.require_project()
         item = self.project.get(target) if target and target != LIBRARY_TARGET else None
         g = self.parse_generation(value)
-        if g.mode in ('qwen', 'krea', 'h3_t2v'):
+        if g.mode in ('qwen', 'krea', 'h3_t2v', 'pixstag_t2v'):
             g.references = []
         g.validate()
         for r in g.references:
@@ -342,30 +350,41 @@ class StudioService(QObject):
                 raise ValueError('参考图不存在：'+r)
             if Path(r).suffix.lower() not in IMAGE_SUFFIXES:
                 raise ValueError('此工作流只支持图片参考，视频不能作为参考图')
+        for r in g.video_references:
+            if r in self.project.data.get('media_trash', {}) or not self.project.file(r).is_file():
+                raise ValueError('参考视频不存在或已移入回收站')
+            if Path(r).suffix.lower() != '.mp4': raise ValueError('Pixstag 参考视频须为 MP4')
         return item, g
 
     def defaults(self, target=None, mode=None, kind='image'):
         p = self.require_project()
         item = p.get(target) if target and target != LIBRARY_TARGET else None
-        history = [j for j in reversed(p.data['jobs']) if (j['generation']['mode'].startswith('h3') == (kind=='video'))]
+        history = [j for j in reversed(p.data['jobs']) if (is_video(j['generation']['mode']) == (kind=='video'))]
         if mode is None:
             mode = ('qwen_edit' if item['image'] else 'qwen') if item else history[0]['generation']['mode'] if history else 'h3_i2v' if kind=='video' else 'qwen'
         previous = next((j for j in reversed(p.data['jobs']) if j['generation']['mode']==mode and (not item or j.get('origin_target',j['target'])==target)), None)
         if previous:
             g = dict(previous['generation'], edit_follow_source=previous.get('edit_follow_source',False), seed=new_seed())
             return self.wire_generation(g)
-        refs = [item['image']] if item and item['image'] and mode in ('h3_i2v', 'upscale', 'quad', 'qwen_edit') else []
+        refs = [item['image']] if item and item['image'] and mode in ('h3_i2v', 'pixstag_i2v', 'upscale', 'quad', 'qwen_edit') else []
         return self.wire_generation(asdict(Generation(mode=mode, prompt=item['description'] if item else '', references=refs, seed=new_seed(), steps=default_steps(mode), megapixels=.2 if mode.startswith('h3') else 6.6 if mode=='qwen' else 1, seconds=2 if mode.startswith('h3') else 5, qwen_int8=mode=='qwen_edit')))
 
     def submit(self, target, generation, name=''):
         item, g = self._generation(target, generation)
+        if is_api(g.mode):
+            if not keyring.get_password('AIStoryStudio', 'pixstag'):
+                raise ValueError('请先在 PC 设置中保存 Pixstag API Key')
+            prepare_pixstag(self.project, g)  # Validate upload limits before adding a billable request.
         # Resolve the legacy 0 sentinel before journaling. Do not re-randomize
         # reviewed seeds here: retries and recovery must reproduce this request.
         g.steps = g.steps or default_steps(g.mode)
         parameters = asdict(g)
         parameters.pop('edit_follow_source')
-        kind = '视频' if g.mode.startswith('h3') else '图片'
-        number = 1+sum(j.get('target')==LIBRARY_TARGET and j['generation']['mode'].startswith('h3')==g.mode.startswith('h3') for j in self.project.data['jobs'])
+        if not is_api(g.mode):
+            for key in list(parameters):
+                if key.startswith('api_') or key == 'video_references': parameters.pop(key)
+        kind = '视频' if is_video(g.mode) else '图片'
+        number = 1+sum(j.get('target')==LIBRARY_TARGET and is_video(j['generation']['mode'])==is_video(g.mode) for j in self.project.data['jobs'])
         j = {'id': uid(), 'target': LIBRARY_TARGET, 'name': name.strip()[:100] or f'{kind} {number}', 'generation': parameters, 'materials': [], 'status': 'new', 'created': now()}
         if item: j['origin_target'] = item['id']
         if g.mode=='qwen_edit': j['edit_follow_source'] = g.edit_follow_source
@@ -393,9 +412,18 @@ class StudioService(QObject):
             self.project.save()
         p = Project(self.project.root)
         snapshot = copy.deepcopy(job)
-        client = Comfy(self.settings.value('comfy', 'http://127.0.0.1:8188'))
+        cloud = is_api(job['generation']['mode'])
+        if cloud:
+            key = keyring.get_password('AIStoryStudio','pixstag')
+            if not key:
+                self.active = None
+                raise ValueError('请先在 PC 设置中保存 Pixstag API Key')
+            client = Pixstag(key)
+        else:
+            client = Comfy(self.settings.value('comfy', 'http://127.0.0.1:8188'))
         def run():
-            outputs = execute(client, p, snapshot, lambda _: self.events.progress.emit('job', copy.deepcopy(snapshot)) if not self.closing else None, lambda: self.stopping.is_set() or self.job_stop.is_set())
+            runner = execute_pixstag if cloud else execute
+            outputs = runner(client, p, snapshot, lambda _: self.events.progress.emit('job', copy.deepcopy(snapshot)) if not self.closing else None, lambda: self.stopping.is_set() or self.job_stop.is_set())
             return snapshot, outputs
         self._spawn('job', run)
         self.publish()
@@ -438,7 +466,7 @@ class StudioService(QObject):
                     args = resolve_target(name, args, b['calls'], b['created'], self.project.data['characters']+self.project.data['scenes']+self.project.data['shots'])
                 if name not in ('add_item', 'update_item', 'set_story', 'generate'):
                     raise ValueError('此工具不是可执行项目操作')
-                pending = {'id': uid(), 'name': name, 'args': args, 'title': {'add_item':'添加条目', 'update_item':'修改条目', 'set_story':'保存故事', 'generate':'生成视频' if args.get('mode','').startswith('h3') else '生成图片'}[name]}
+                pending = {'id': uid(), 'name': name, 'args': args, 'title': {'add_item':'添加条目', 'update_item':'修改条目', 'set_story':'保存故事', 'generate':'生成视频' if is_video(args.get('mode','')) else '生成图片'}[name]}
                 if name == 'generate':
                     if args.get('target','').startswith('@') and any(c['function']['name']=='add_item' for c in b['calls']):
                         # Legacy dependent suggestions still respect a rejected
@@ -447,7 +475,7 @@ class StudioService(QObject):
                     g = self.parse_generation(self.defaults(mode=args['mode']))
                     g.prompt, g.references = args['prompt'], args['references']
                     self._generation(None, asdict(g))
-                    pending.update(targetId=LIBRARY_TARGET, targetName='视频库' if g.mode.startswith('h3') else '图片库', generation=self.wire_generation(asdict(g)))
+                    pending.update(targetId=LIBRARY_TARGET, targetName='视频库' if is_video(g.mode) else '图片库', generation=self.wire_generation(asdict(g)))
                 elif name == 'add_item' and args['kind'] != 'shots':
                     if not args.get('file'): raise ValueError('添加角色或场景需要先选择已有图片；生成新图片请使用生图操作')
                     record = AssetLibrary(self.project).get(args.get('file',''))
@@ -543,6 +571,8 @@ class StudioService(QObject):
                 raise ValueError('ComfyUI 地址必须为有效 HTTP 地址')
             if a.get('key', '').strip():
                 keyring.set_password('AIStoryStudio', 'deepseek', a['key'].strip())
+            if a.get('pixstagKey', '').strip():
+                keyring.set_password('AIStoryStudio', 'pixstag', normalize_key(a['pixstagKey']))
             self.settings.setValue('comfy', url.rstrip('/'))
             if 'model' in a:
                 self.settings.setValue('model', a['model'])
@@ -554,6 +584,14 @@ class StudioService(QObject):
             if not key:
                 raise ValueError('请先保存 DeepSeek API Key')
             self._spawn('models', lambda:list_models(key)); self.publish(); return True
+        if command == 'pixstag.check':
+            key = keyring.get_password('AIStoryStudio','pixstag')
+            if not key: raise ValueError('请先保存 Pixstag API Key')
+            def check_account():
+                client = Pixstag(key)
+                try: return client.account()
+                finally: client.close()
+            self._spawn('pixstag-check',check_account); self.publish(); return True
         if command == 'link.open':
             if not safe_link(a['url']):
                 raise ValueError('链接协议不安全')
@@ -587,7 +625,7 @@ class StudioService(QObject):
             current = [item['name'] for kind in ('characters','scenes','shots') for item in p.data[kind] if record['file'] in (item.get('image'),item.get('video'))]
             if current: raise ValueError('素材正在被使用，请先替换或移除这些条目的图片/视频：'+'、'.join(current))
             unfinished = {'new','submitting','queued','running','downloading','cancel_requested','unknown','detached'}
-            if any(j.get('status') in unfinished and record['file'] in j.get('generation',{}).get('references',[]) for j in p.data['jobs']):
+            if any(j.get('status') in unfinished and record['file'] in (j.get('generation',{}).get('references',[])+j.get('generation',{}).get('video_references',[])) for j in p.data['jobs']):
                 raise ValueError('素材正被未完成的生成任务引用，请先完成或取消任务')
             p.data.setdefault('media_trash', {})[record['file']] = {'name':record['name'],'kind':record['kind'],'time':now()}
             self.media_context = [m for m in self.media_context if m['file']!=record['file']]
@@ -722,6 +760,13 @@ class StudioService(QObject):
             return str(new_seed())
         if command == 'generation.preview':
             g = self.parse_generation(a['generation'])
+            if is_api(g.mode):
+                _, g = self._generation(None, a['generation'])
+                _, audit = prepare_pixstag(p,g)
+                return {'provider':'pixstag', 'model':g.api_model, 'resolution':g.api_resolution, 'ratio':g.ratio,
+                        'seconds':int(g.seconds), 'references':audit,
+                        'keySet':bool(keyring.get_password('AIStoryStudio','pixstag')),
+                        'notice':'确认后由 PC 上传提示词和参考素材至 Pixstag，可能消耗账户积分。API 不提供总体百分比或已提交任务的取消接口。'}
             if type(g.steps) is not int or not 0 <= g.steps <= 100:
                 raise ValueError('采样步数必须为 0–100 的整数')
             w, h = resolution(g.ratio, g.megapixels, 32 if g.mode.startswith('h3') or g.mode=='qwen_edit' else 8)
@@ -741,6 +786,8 @@ class StudioService(QObject):
         if command == 'task.cancel':
             j = next(j for j in p.data['jobs'] if j['id']==a['id'])
             if j['status']=='new': j['status']='cancelled'; self.save(); return True
+            if is_api(j['generation']['mode']):
+                raise ValueError('Pixstag 文档未提供取消接口；已提交任务无法在 Studio 取消，停止查询也不会停止计费')
             if not j.get('prompt_id') or j['status'] not in ('queued','running','cancel_requested'):
                 raise ValueError('此任务当前不能取消，请先恢复查询核对后端')
             client = Comfy(self.settings.value('comfy','http://127.0.0.1:8188'))
@@ -750,6 +797,11 @@ class StudioService(QObject):
             if not j.get('prompt_id'):
                 raise ValueError('没有后端任务 ID，无法恢复；请人工核对，未自动重交')
             self.start_job(j); return True
+        if command == 'task.detach':
+            j = next(j for j in p.data['jobs'] if j['id']==a['id'])
+            if not is_api(j['generation']['mode']) or self.active is not j or not j.get('prompt_id') or j['status'] not in ('queued','running'):
+                raise ValueError('仅可停止已取得云端任务 ID 的本机查询')
+            self.job_stop.set(); return True
         if command == 'chat.send':
             if 'chat' in self.workers or self.batch: raise ValueError('请等待本轮完成或处理待审阅操作')
             if not keyring.get_password('AIStoryStudio','deepseek'): raise ValueError('请先保存 DeepSeek API Key')

@@ -13,7 +13,7 @@ def test_h3_frame_alignment_and_short_test():
     assert frames(2)==56
     assert resolution('16:9',.2)==(608,352)
 
-@pytest.mark.parametrize('mode',list(MODES))
+@pytest.mark.parametrize('mode',[m for m in MODES if not m.startswith('pixstag_')])
 def test_graphs_closed_and_output(mode):
     n={'qwen_edit':1,'quad':1,'h3_i2v':1,'h3_ref':2,'h3_fl2v':2,'upscale':1}.get(mode,0)
     g=Generation(mode=mode,prompt='test',references=['a']*n)
@@ -36,7 +36,7 @@ def test_qwen_t2i_matches_approved_precision_sampling_and_export():
     assert graph['output']['inputs']['format.bit_depth']=='16-bit'
 
 
-@pytest.mark.parametrize('mode',list(MODES))
+@pytest.mark.parametrize('mode',[m for m in MODES if not m.startswith('pixstag_')])
 def test_zero_steps_still_uses_workflow_default_in_legacy_jobs(mode):
     refs=['a']*({'qwen_edit':1,'quad':1,'h3_i2v':1,'h3_ref':1,'h3_fl2v':2,'upscale':1}.get(mode,0))
     g=Generation(mode=mode,prompt='test',references=refs,seed=100,steps=0)

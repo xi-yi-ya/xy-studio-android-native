@@ -1,0 +1,275 @@
+{
+  "version": "1.2.0",
+  "validatedAtUtc": "2026-10-10T19:25:01.520386+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "qt": "6.12.0",
+    "platform": "Windows",
+    "desktop": "Vue + QWebEngineView + QWebChannel; Python in-process",
+    "comfyPort": 8188
+  },
+  "pythonTests": {
+    "passed": 131,
+    "originalTestsRetained": true,
+    "log": "local-data/v120-python-tests.log"
+  },
+  "frontend": {
+    "typecheck": true,
+    "viteBuild": true,
+    "packagedBundleMatchesSource": true,
+    "files": [
+      {
+        "file": "index.html",
+        "sha256": "1fbc700879b0e125f23e4b117a352ee0e8f27ef025f2b88189c77ae606c4d585"
+      },
+      {
+        "file": "assets/index-9Id6EA5Z.css",
+        "sha256": "1c2774beaef56796fa37aefc5c6b885a0864f61ae81c35afd14ade454f19a8dc"
+      },
+      {
+        "file": "assets/index-Cv4zy7Hx.js",
+        "sha256": "908c9ea85f2ca80fc7c087a2f24b7274f2e616b015656496fa3adf37904ab519"
+      },
+      {
+        "file": "media/xy-logo.jpg",
+        "sha256": "5f8fb6214cc2d5d25cda015e5ede51ab1e9f9d3c9f7ccb503494e70eaa3f7b25"
+      }
+    ]
+  },
+  "desktopTests": {
+    "sourcePassed": 21,
+    "packagedPassed": 21,
+    "realWindowsExe": true,
+    "coreTests": 15,
+    "newLibraryFlowTests": 6,
+    "logs": [
+      "local-data/v120-source-desktop-3.log",
+      "local-data/v120-source-library-ui-final.log",
+      "local-data/v120-package-desktop.log",
+      "local-data/v120-package-library-ui-final.log"
+    ],
+    "noMockBackend": true,
+    "offlineAgentSuggestionFixtureIsNotRealApi": true
+  },
+  "realInference": {
+    "passed": true,
+    "model": "deepseek-flash",
+    "project": "D:\\Flie\\Repository\\AI-Story-Studio\\local-data\\v120-package-library-live-1791659259303",
+    "extraTasks": false,
+    "automaticAssetsOrShots": false,
+    "userAdoptedAfterCompletion": true,
+    "originalReferencesAndPromptRestored": true,
+    "playback": true,
+    "cases": [
+      {
+        "name": "Real Agent image generation",
+        "id": "0acf6097b5974225885816ddbc5f6e30",
+        "mode": "qwen_edit",
+        "steps": 40,
+        "megapixels": 0.2,
+        "secondsRequested": 5,
+        "referenceCount": 2,
+        "measuredSamplerSteps": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40
+        ],
+        "realUiProgressMatchesBackend": true,
+        "status": "completed",
+        "output": "outputs/0acf6097b5974225885816ddbc5f6e30/074af76020f446f59960a0e596fcdf6e.png",
+        "sha256": "0a3f5548f46a8eed7bfd8a7c81bb178386bccc89afb9d1512fd174e6686ae923",
+        "size": [
+          608,
+          352
+        ]
+      },
+      {
+        "name": "Real Agent direct image-to-video",
+        "id": "cddc17396ffc4d92a2a43a29d125a3c3",
+        "mode": "h3_i2v",
+        "steps": 8,
+        "megapixels": 0.1,
+        "secondsRequested": 2,
+        "referenceCount": 1,
+        "measuredSamplerSteps": [
+          1,
+          3,
+          4,
+          5,
+          7
+        ],
+        "realUiProgressMatchesBackend": true,
+        "status": "completed",
+        "output": "outputs/cddc17396ffc4d92a2a43a29d125a3c3/41abbbb44e0f4c38a85ef07bcbdbeaeb.mp4",
+        "sha256": "b47c6760f9e3ff51af859da59bee1a1eabab60e7d12d3965af58fd0ab4450201",
+        "size": [
+          416,
+          256
+        ]
+      }
+    ]
+  },
+  "mediaInspection": {
+    "image": {
+      "size": [
+        608,
+        352
+      ],
+      "format": "PNG",
+      "sha256": "0a3f5548f46a8eed7bfd8a7c81bb178386bccc89afb9d1512fd174e6686ae923"
+    },
+    "video": {
+      "size": [
+        416,
+        256
+      ],
+      "frames": 56,
+      "fps": 24.0,
+      "duration": 2.3333333333333335,
+      "codec": "h264",
+      "sha256": "b47c6760f9e3ff51af859da59bee1a1eabab60e7d12d3965af58fd0ab4450201",
+      "audio": {
+        "codec": "aac",
+        "sample_rate": 32000,
+        "samples": 74400,
+        "decoded": true
+      }
+    }
+  },
+  "nativeDrop": {
+    "passed": true,
+    "project": "D:\\Flie\\Repository\\AI-Story-Studio\\local-data\\v120-native-drop-1791659943624586600",
+    "zoom": 1.25,
+    "errors": [],
+    "lastUiState": {
+      "ready": false,
+      "reason": "bootstrap"
+    },
+    "nativeEventsAccepted": true,
+    "originalBytesPreserved": true,
+    "kinds": [
+      "image",
+      "video"
+    ]
+  },
+  "projectReadback": {
+    "passed": true,
+    "errors": [],
+    "version": "1.2.0",
+    "project": "D:\\Flie\\Repository\\AI-Story-Studio\\local-data\\v120-package-library-live-1791659259303",
+    "idsUnchanged": true,
+    "promptAndReferencesUnchanged": true,
+    "mediaNamesUnchanged": true,
+    "playback": true,
+    "schema": 1,
+    "library": {
+      "images": 3,
+      "videos": 1
+    }
+  },
+  "frozenReadback": {
+    "passed": true,
+    "errors": [],
+    "version": "1.0.0",
+    "project": "D:\\Flie\\Repository\\AI-Story-Studio\\local-data\\v120-frozen-compat",
+    "idsUnchanged": true,
+    "promptAndReferencesUnchanged": true,
+    "mediaNamesUnchanged": true,
+    "playback": true,
+    "schema": 1
+  },
+  "exit": {
+    "queuePending": 0,
+    "comfyProcessId": 93516,
+    "queueRunning": 0,
+    "ownedProcessIds": [
+      58520,
+      86196,
+      104128,
+      82948,
+      104740,
+      92152,
+      80460,
+      101860,
+      100548,
+      89480
+    ],
+    "remaining": [],
+    "allExited": true,
+    "comfyAlive": true
+  },
+  "oldArchives": [
+    {
+      "version": "1.0.0",
+      "sha256": "71fa1a95e5fd8b75576e6294524524984fe1a1614a028092177c6321689211f0",
+      "unchanged": true
+    },
+    {
+      "version": "1.1.0",
+      "sha256": "036ccf88c27318401bf9b2875080a1fa35f936ee2099d58fe56a9e254e7fa8ea",
+      "unchanged": true
+    },
+    {
+      "version": "1.1.1",
+      "sha256": "531673ca6aa66498248bd534a0d869fe51ee0eec4ef4b90ed49cb876d38d5f95",
+      "unchanged": true
+    }
+  ],
+  "storage": {
+    "schema": 1,
+    "oldIdsUnchanged": true,
+    "oldDescriptionsPreserved": true,
+    "apiKeyStorageUnchanged": true,
+    "newJobTarget": "__library__",
+    "oldPendingResumeLibraryOnly": true
+  },
+  "upload": {
+    "performed": false,
+    "reason": "User requested upload remain paused"
+  },
+  "knownLimitations": [
+    "DeepSeek receives text and metadata, not image pixels",
+    "No automatic multi-stage generation pipeline",
+    "Only low-resolution short video inference validated this release",
+    "Large local video import may briefly block the UI thread",
+    "Native drag chain tested using Qt events and actual UI, not manual Explorer dragging",
+    "Audio decoded; no subjective listening claim"
+  ]
+}

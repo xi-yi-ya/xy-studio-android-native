@@ -1,63 +1,60 @@
-# XY Studio Android Native
+# XY Studio · Android Native + Windows LAN
 
-Kotlin + Jetpack Compose 原生 Android 客户端，通过局域网控制 Windows 上的 XY Studio / ComfyUI。此仓库为 Owner 授权创建的**私有开发归档**，基于 XY Studio v1.2.1 的当前本地工作副本；未修改原仓库的远端或推送其历史。
+Kotlin + Jetpack Compose 原生 Android 创作客户端，通过 HTTP / WebSocket 连接 Windows 上的 XY Studio Python 服务。PC 保留 Vue 3 / PySide6 桌面界面，复用同一套项目、Agent 和 ComfyUI 工作流。Android 不使用 WebView，也不保存 DeepSeek / Pixstag API Key。
 
-手机负责界面与交互，PC 是唯一项目数据源，并负责模型推理、素材保存和 DeepSeek 调用。Android 不保存 DeepSeek API Key，没有 WebView 包装 Vue。
+这是个人毕业设计与 Vibe Coding 实践项目，当前版本为 **Android native preview.5 + Windows LAN / Pixstag 预览版**。功能仍在完善，后续更新没有固定计划。
 
-## 先阅读
+## 下载与运行
 
-- [中文学习入口](docs/android-handbook/index.html)：下载仓库后双击此 HTML 离线阅读，GitHub 页面只显示源码。
-- [Android Studio 使用手册](docs/android-handbook/manual.html)：打开工程、编译、USB 安装、图片与视频、AI 附件操作。
-- [Java 对照源码文档](docs/android-handbook/java-guide.html)：全部 14 个生产 Kotlin 文件与业务调用链。
-- [可编译的 Java 阅读模型](docs/android-handbook/java-src/StudioJavaGuide.java) / [Javadoc](docs/android-handbook/javadoc/index.html)：帮助理解，不替换生产 Kotlin 应用。
-- [Android 安装与连接](docs/ANDROID-NATIVE.md)、[功能与真机验收记录](docs/ANDROID-DESKTOP-PARITY.md)、[演示方案](demo/README.md)。
+在 [Releases](https://github.com/xi-yi-ya/xy-studio-android-native/releases) 下载：
 
-## 目录
+- **XY-Studio-Android-debug.apk**：Android 8.0+ 原生 Debug APK。
+- **XY-Studio-Windows-LAN-Pixstag-preview.zip**：Windows 桌面程序，完整解压后运行 `XY-Studio/XY-Studio.exe`，保留 `_internal`。
+- **XY-Studio-Android-Handbook.zip**：中文使用手册与 Java 阅读文档，解压后打开 `docs/android-handbook/index.html`。
+- **SHA256SUMS.txt**：各附件的 SHA-256 校验值。
 
-| 目录 | 内容 |
-| --- | --- |
-| `android-native/` | Kotlin / Compose 工程、Gradle Wrapper、单元和真机测试 |
-| `studio/lan/` | Python LAN API、授权、媒体访问和桌面业务适配 |
-| `studio/`、`frontend/` | 原 PC 业务与 Vue 桌面界面，用于复用工作流和“手机连接”入口 |
-| `docs/android-handbook/` | 中文手册、Java 对照、离线源码快照 |
-| `scripts/` | 构建、部署、IDE 启动和 LAN 启动脚本 |
-| `tests/` | PC 业务与 LAN 自动化测试 |
+PC 桌面点“手机连接”启动 LAN 服务；手机与 PC 在同一局域网，首次输入面板的地址和固定连接密码，之后自动连接。PC 登记的全部可访问项目显示在手机列表，切换项目会同步到另一端；素材按需读取，原文件留在 PC。
 
-## 开发环境
+本地图片 / 视频生成需要你自行准备 ComfyUI、节点与模型。Pixstag 云端视频在 PC 设置中填写自己的 Key，再在生成视频中切换来源；确认提交可能消耗平台积分，参考素材会上传至该平台。作者不提供共享密钥或免费额度。
 
-当前已验证环境：JDK 21、Android SDK Platform 36、Build Tools 36.0.0、Gradle Wrapper 8.14.3、AGP 8.13.0、Kotlin 2.3.0。
+## 当前功能
 
-Android Studio 打开 **android-native** 目录。新电脑需自行安装 SDK / JDK，并在 IDE 选择 JDK 21；不要把作者电脑的绝对路径照抄到另一台电脑。SDK、JDK、Gradle 缓存和 local.properties 不在仓库内。
+- 项目、角色、场景、分镜、图片库 / 视频库、素材导入、回收站和预览。
+- 原生图片 / 视频生成表单、参考图 / 视频选择、参数确认、PC 队列、真实阶段或节点进度、历史记录、Media3 视频播放。
+- DeepSeek 全屏 AI 对话、素材引用、PC 项目上下文、Skill 加载及原有操作审阅。
+- Pixstag V2：H3、Seedance 2 / 2.5；文生视频、图生视频、首尾帧和多模态参考；查询、结果下载入库与任务 ID 恢复。
+- 密钥保存在 PC Windows 凭据管理器。LAN 使用认证和项目路径约束；不会把 ComfyUI 8188 直接暴露成手机业务接口。
 
-Windows 构建（仓库根目录 PowerShell）：
+AI 附件目前提供文字和素材引用，不能据此声称模型读取了视频画面 / 音轨。Pixstag 没有已提交任务取消接口或整体百分比，停止本机查询不会停止云端计费。
+
+## 文档与 Java 阅读入口
+
+- [中文学习入口](docs/android-handbook/index.html) / [Android Studio 使用手册](docs/android-handbook/manual.html)：下载后离线打开 HTML，GitHub 文件页面显示源码。
+- [Java 思路与文件地图](docs/android-handbook/java-guide.html) / [可编译 Java 教学模型](docs/android-handbook/java-src/StudioJavaGuide.java) / [Javadoc](docs/android-handbook/javadoc/index.html)。Java 文件用于解释 Kotlin 职责和调用链，不替换生产应用。
+- [Android 安装连接](docs/ANDROID-NATIVE.md)、[Pixstag 用法与边界](docs/PIXSTAG-VIDEO.md)、[验收清单](docs/ANDROID-ACCEPTANCE.md)、[演示录制顺序](demo/README.md)。
+- [2026-10-28 公开交付记录](docs/PUBLIC-RELEASE-20261028.md)：实际测试与未验证项、发布范围。
+
+建议先看 `StudioViewModel.kt`（业务调度）、`GenerationScreen.kt`（生成表单）和 `LanApi.kt`（网络层），再跟到 PC 的 `studio/service.py`、`workflows.py` / `pixstag.py`。
+
+## 构建
+
+Android Studio 打开 **android-native/**。已验证 JDK 21、SDK Platform 36 / Build Tools 36.0.0、Gradle Wrapper 8.14.3、AGP 8.13.0、Kotlin 2.3.0。新电脑使用自己的 SDK / JDK 路径，不要照抄文档里的本机绝对路径。
 
 ```powershell
 .\scripts\build-android.ps1 -JavaHome '你的JDK21目录' -SdkRoot '你的AndroidSDK目录' -Test
-```
-
-APK 输出：`releases/android-native-preview/XY-Studio-Android-debug.apk`。已构建 Debug APK 通过此私有仓库的 Release 附件归档，不把大文件或 debug 签名私钥提交进源码历史。
-
-手机连接 USB 后，在手机允许调试与系统安装：
-
-```powershell
 .\scripts\deploy-android.ps1 -Adb '你的AndroidSDK目录\platform-tools\adb.exe'
 ```
 
-PC 使用 Python 环境安装 `requirements.txt` 和 `requirements-lan.txt`，按 [Android 安装与连接说明](docs/ANDROID-NATIVE.md) 启动桌面或 LAN 服务。ComfyUI、模型和用户项目需在 PC 单独准备，仓库不携带它们。
+APK 输出 `releases/android-native-preview/XY-Studio-Android-debug.apk`。不要清除手机数据；覆盖安装时在手机系统提示中允许。
 
-## 当前功能与边界
+PC 使用 Python 3.12，安装 `requirements.txt` 和 `requirements-lan.txt`；执行 `npm --prefix frontend ci`、`npm --prefix frontend run build` 后运行 `python main.py`。独立 LAN 启动脚本是 `scripts/start-lan.ps1`，桌面包构建是 `scripts/build-lan-preview.ps1`。
 
-- 局域网固定密码认证、真实项目/素材、图片与视频生成表单、真实任务状态、原生视频播放。
-- 角色/场景/分镜管理、素材回收站、AI 全屏对话、图片视频引用、手机文件导入与原有操作审阅。
-- 当前 Agent 接收文字和素材引用，不直接接收图像像素或视频音轨；“可加视频附件”不等于“视频理解”。
-- 不承诺桌面全部功能已逐项真机验收，详细通过项、历史失败与未覆盖项见验收记录。
+本次历史测试：181 项 Python、10 项 Android 单测通过；模拟器真实连接 PC，完成云端参数 / 参考素材 / 暂停队列与既有视频播放回归。**Owner 选择不消耗积分，本次没有真实付费 Pixstag 视频生成成功记录**。本次未重新完成实体手机 Wi-Fi 验收；此前 iQOO 9 本地 ComfyUI 验收与新云端验收分开记录。
 
-## 本次归档验证
+## 源码与发布范围
 
-IDE 已启用官方中文语言资源并成功同步；Java 阅读模型编译及 11 项纯逻辑检查通过；50 个 HTML 文件的本地链接检查通过，桌面与手机宽度无横向溢出。客户端构建结果见 `docs/android-handbook/verification.json`。
+`android-native/` 是交付的原生客户端；`studio/`、`frontend/` 是 PC 业务和桌面界面；`tests/`、`scripts/` 为测试和构建；`docs/` 为使用与开发文档。`mobile/` 是停止维护的 Capacitor 试作，仅留开发记录，不是本次 APK。
 
-本轮文档制作时 ADB 无设备，没有重新提交 ComfyUI 生成任务。之前的真实手机验收明确记为历史记录。完整运行日志和含个人素材的截图只保留原电脑，未放进本仓库；保留不含凭证的汇总。
+此仓库起初为私人归档，现经作者授权公开；保留原始历史，原桌面仓库仍位于 [ai-story-studio](https://github.com/xi-yi-ya/ai-story-studio)。没有上传用户项目、生成素材、密钥、连接密码、签名私钥、SDK/JDK、Android Studio 安装器或含个人内容的原始运行日志 / 测试截图。历史文档中的“仅本地 / 未上传”描述对应当时状态。
 
-## 归档范围
-
-不含本机密码/令牌/API Key、用户项目与生成素材、SDK/JDK、Android Studio 安装包、构建缓存、签名私钥，以及停止维护的 Capacitor 客户端。文档中的绝对路径是 Owner 本机操作说明。原有 PC 源码许可保留，第三方说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+原创代码使用 [0BSD](LICENSE)。第三方组件、ComfyUI、模型与素材保持各自许可，见 [第三方说明](THIRD_PARTY_NOTICES.md)。

@@ -1,0 +1,9 @@
+.venv/
+**/node_modules/
+**/dist/
+build/
+releases/
+local-data/
+prototypes/
+.vscode/tooling/package-lock.json
+frontend/package-lock.json

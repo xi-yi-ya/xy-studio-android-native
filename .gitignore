@@ -10,3 +10,21 @@ releases/
 .env*
 *.log
 frontend/dist-mobile/
+
+# Public source checkout: credentials, personal media and machine-only state
+.private/
+*.pem
+*.key
+*.keystore
+*.jks
+local.properties
+.gradle/
+.kotlin/
+.idea/
+*.iml
+node_modules/
+frontend/dist/
+*.bak
+demo/evidence/**
+!demo/evidence/public-summary-20261028/
+!demo/evidence/public-summary-20261028/**

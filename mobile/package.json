@@ -1,0 +1,8 @@
+{
+  "name": "xy-studio-android",
+  "version": "1.2.1",
+  "private": true,
+  "scripts": {"sync": "cap sync android", "add": "cap add android"},
+  "dependencies": {"@capacitor/core": "8.5.3", "@capacitor/android": "8.5.3"},
+  "devDependencies": {"@capacitor/cli": "8.5.3"}
+}

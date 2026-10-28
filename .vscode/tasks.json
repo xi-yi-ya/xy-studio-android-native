@@ -1,0 +1,93 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "XY Studio: Vue + TypeScript check",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/frontend/node_modules/vue-tsc/bin/vue-tsc.js",
+        "--noEmit"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "problemMatcher": "$tsc",
+      "group": "build"
+    },
+    {
+      "label": "XY Studio: ESLint check",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/.vscode/tooling/node_modules/eslint/bin/eslint.js",
+        "frontend/src"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$eslint-stylish"
+    },
+    {
+      "label": "XY Studio: Prettier check (no writes)",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/frontend/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        "frontend/src"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "XY Studio: Python tests",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "args": [
+        "-m",
+        "pytest",
+        "tests",
+        "--basetemp",
+        "local-data/pytest-local"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "XY Studio: Install editor packages",
+      "type": "process",
+      "command": "npm.cmd",
+      "args": [
+        "ci",
+        "--prefix",
+        ".vscode/tooling",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "XY Studio: Install editor tooling",
+      "dependsOn": "XY Studio: Install editor packages",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/.vscode/tooling/link.cjs"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

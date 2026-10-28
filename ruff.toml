@@ -1,0 +1,9 @@
+target-version = "py312"
+line-length = 100
+extend-exclude = ["build", "dist", "releases", "local-data", "prototypes", "frontend/node_modules", ".venv"]
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[format]
+quote-style = "preserve"

@@ -3,14 +3,14 @@
 本次最终 Android 工程是 `android-native/`：Kotlin + Jetpack Compose + OkHttp + Media3。
 不包含 WebView、Vue 页面或 Capacitor 运行时。`mobile/` 和 Vue LAN 适配是需求变更前保留的试作，不是交付客户端。
 
-当前本地 APK 为 `1.2.1-native-preview.4`：AI 对话新增项目图片/视频附件与手机导入，并补齐资产新建、分镜关联、素材筛选和回收站。说明与验收见 [桌面功能对照](ANDROID-DESKTOP-PARITY.md)。青蓝界面历史见 [移动界面验收](ANDROID-MOBILE-DESIGN.md)；此前真实生成记录见 [原生生成体验](ANDROID-GENERATION-UX.md)。
+当前本地 APK 为 `1.2.1-native-preview.5-pixstag`：新增 PC 统一调用的 Pixstag 云端视频入口、模型 / 清晰度选择、图片与视频参考、任务阶段和恢复查询，详见 [Pixstag 视频使用说明](PIXSTAG-VIDEO.md)。原有对话附件、资产、分镜和回收站保留。历史说明见 [桌面功能对照](ANDROID-DESKTOP-PARITY.md)、[移动界面验收](ANDROID-MOBILE-DESIGN.md)、[原生生成体验](ANDROID-GENERATION-UX.md)。
 
 ## 启动 PC
 
-1. 使用本地预览包 `releases/v1.2.1-lan-preview-20261022-r3/XY-Studio/XY-Studio.exe`，或安装 `requirements.txt` 后运行 `main.py`。旧版 EXE 不会自动升级；新预览包独立保存。
-2. 启动已有 ComfyUI，确认 PC 的 `http://127.0.0.1:8188` 可访问。模型和工作流由原 Studio Python 业务处理。
-3. 在 Studio 侧栏下方点击 **手机连接**，选择本机局域网 IPv4 和空闲端口，再点击 **启动局域网服务并共享当前项目**。PC 与手机共用正在运行的 Studio 实例。关闭面板不会停止服务；面板内可单独停止服务，退出 Studio 则停止服务。
-4. 切换到另一个项目后，在“手机连接”面板点击 **共享当前打开的项目**。没有共享的项目不会出现在手机端。每次服务重新启动只共享当时打开的项目。固定密码保存在 Windows 凭据库，不随重启改变。
+1. 双击仓库根目录的 `启动XYStudio.cmd`，它会打开 `releases/v1.2.1-lan-preview-20261026-pixstag/XY-Studio/XY-Studio.exe`。也可安装 `requirements.txt` 后运行 `main.py`。旧版 EXE 不会自动升级；新预览包独立保存。
+2. 使用本地生成时启动已有 ComfyUI，确认 PC 的 `http://127.0.0.1:8188` 可访问。模型和工作流由原 Studio Python 业务处理。使用 Pixstag 云端视频只需 PC 联网并在桌面配置 Pixstag Key，无需启动 ComfyUI。
+3. 在 Studio 侧栏下方点击 **手机连接**，选择本机局域网 IPv4 和空闲端口，再点击 **启动局域网服务并自动同步**。PC 与手机共用正在运行的 Studio 实例。关闭面板不会停止服务；面板内可单独停止服务，退出 Studio 则停止服务。
+4. 服务开启后，手机可浏览 Studio 已登记的全部可访问项目（已有最近项目 + 持久项目索引）。PC 打开或新建项目会自动加入列表；两端切换当前项目会同步跟随，无需再点共享。手机打开列表中的项目也会切换 PC 的当前项目。素材仍在原 PC 目录，按需读取，不复制或迁移项目。未曾登记的旧项目在 PC 打开一次即可加入；不会扫描整个硬盘。固定密码保存在 Windows 凭据库，不随重启改变。
 5. API Key 和 ComfyUI 地址仍在 PC 设置中配置。手机不接收或保存 DeepSeek Key。端口被旧测试服务占用时可选择其他端口；不要重复打开同一项目的独立实例。
 
 独立 LAN 启动脚本仍保留，便于排查或无工作台启动：
@@ -36,7 +36,7 @@
 
 这是可信局域网的 HTTP/WebSocket 方案，配对和授权不能防止同网段恶意监听或中间人攻击。勿在公共 Wi-Fi 使用、勿配置公网转发。需要不可信网络时，应另行增加 TLS 证书配对，而不是开放当前服务。
 
-本次 iQOO 9 界面验收使用 `http://192.168.50.198:8767` 的独立 QA 后台服务，手机已经加密记住连接信息。日常使用自己的项目，请从 Studio「手机连接」面板共享，选择空闲端口并修改手机连接地址；勿重复启动进程写同一项目。
+2026-10-23 已在 iQOO 9 验证桌面内置服务 `http://192.168.50.198:8765`：全部已登记项目列表、PC 打开项目后的自动跟随、手机切换后 PC 跟随、素材刷新和现有视频播放。此前 `8767` 是独立 QA 服务的历史地址。日常以当前 Studio「手机连接」面板显示的地址为准，无需逐个共享项目；勿重复启动进程写同一项目。记录见 [自动同步验收](../demo/evidence/project-sync-20261023/README.md)。
 
 ## USB 部署与真实测试
 

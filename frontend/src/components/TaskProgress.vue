@@ -19,7 +19,8 @@ const label = computed(() => {
       ? `生成中${node} · 正在处理`
       : `生成中${node} · ${t.steps ? `${t.steps.value}/${t.steps.max} 步 · ` : ''}${Math.round(percent.value)}%`;
   }
-  return ({ new: props.paused ? '等待执行 · 队列已暂停' : '等待执行', submitting: '正在提交到 ComfyUI', queued: 'ComfyUI 排队中', downloading: '正在保存生成结果', cancel_requested: '正在请求取消', unknown: '状态待核对 · 请恢复查询', detached: '查询已断开 · 请恢复查询' } as Record<string, string>)[t.status] || '';
+  const backend = t.provider === 'pixstag' ? 'Pixstag' : 'ComfyUI';
+  return ({ new: props.paused ? '等待执行 · 队列已暂停' : '等待执行', submitting: `正在提交到 ${backend}`, queued: `${backend} 排队中`, downloading: '正在保存生成结果', cancel_requested: '正在请求取消', unknown: '状态待核对 · 请恢复查询', detached: '查询已断开 · 请恢复查询' } as Record<string, string>)[t.status] || '';
 });
 </script>
 

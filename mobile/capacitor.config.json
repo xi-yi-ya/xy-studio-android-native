@@ -1,0 +1,7 @@
+{
+  "appId": "cn.xiyi.xystudio",
+  "appName": "XY Studio",
+  "webDir": "../frontend/dist-mobile",
+  "server": {"androidScheme": "http", "cleartext": true},
+  "android": {"allowMixedContent": true}
+}

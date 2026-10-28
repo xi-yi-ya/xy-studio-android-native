@@ -1,0 +1,288 @@
+{
+  "version": "1.0.0",
+  "tag": "v1.0.0",
+  "validatedAtUtc": "2026-10-10T14:45:34.350983+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "qt": "6.12.0",
+    "platform": "win32",
+    "desktop": "packaged QWebEngineView + QWebChannel",
+    "realComfyPort": 8188
+  },
+  "pythonTests": {
+    "passed": 92,
+    "command": ".venv\\Scripts\\python.exe -m pytest tests --basetemp local-data\\pytest-v100-freeze -q",
+    "originalTestsRetained": true
+  },
+  "desktopTests": {
+    "passed": 12,
+    "realExe": true,
+    "command": "XY_CDP=http://127.0.0.1:9226 XY_VALIDATION_VERSION=v100 XY_LEGACY=local-data/v032-compat npm test (from frontend)",
+    "legacyProjectCopy": true,
+    "resolutions": [
+      [
+        1920,
+        1080
+      ],
+      [
+        2560,
+        1440
+      ],
+      [
+        3840,
+        2160
+      ],
+      [
+        1024,
+        768
+      ]
+    ],
+    "zoom": 1.25,
+    "shotsStressCount": 41,
+    "afterEachChecksUnhandledUiErrors": true
+  },
+  "realInference": {
+    "passed": true,
+    "completedJobs": 5,
+    "requestedMegapixels": 0.1,
+    "progressTests": [
+      {
+        "name": "角色图片进度",
+        "mode": "krea",
+        "measuredUiUpdates": 24,
+        "distinctMeasuredSteps": [
+          {
+            "value": 2,
+            "max": 16
+          },
+          {
+            "value": 5,
+            "max": 16
+          },
+          {
+            "value": 8,
+            "max": 16
+          },
+          {
+            "value": 11,
+            "max": 16
+          },
+          {
+            "value": 14,
+            "max": 16
+          }
+        ],
+        "globalAndCardBarsMatch": true,
+        "savedOnOriginalItem": true
+      },
+      {
+        "name": "场景图片与连续手工任务进度",
+        "mode": "krea",
+        "measuredUiUpdates": 24,
+        "distinctMeasuredSteps": [
+          {
+            "value": 3,
+            "max": 16
+          },
+          {
+            "value": 6,
+            "max": 16
+          },
+          {
+            "value": 9,
+            "max": 16
+          },
+          {
+            "value": 12,
+            "max": 16
+          },
+          {
+            "value": 15,
+            "max": 16
+          }
+        ],
+        "globalAndCardBarsMatch": true,
+        "savedOnOriginalItem": true
+      },
+      {
+        "name": "分镜图片进度",
+        "mode": "krea",
+        "measuredUiUpdates": 25,
+        "distinctMeasuredSteps": [
+          {
+            "value": 0,
+            "max": 1
+          },
+          {
+            "value": 3,
+            "max": 16
+          },
+          {
+            "value": 6,
+            "max": 16
+          },
+          {
+            "value": 9,
+            "max": 16
+          },
+          {
+            "value": 12,
+            "max": 16
+          },
+          {
+            "value": 15,
+            "max": 16
+          }
+        ],
+        "globalAndCardBarsMatch": true,
+        "savedOnOriginalItem": true
+      },
+      {
+        "name": "H3 视频进度",
+        "mode": "h3_i2v",
+        "measuredUiUpdates": 17,
+        "distinctMeasuredSteps": [
+          {
+            "value": 0,
+            "max": 1
+          },
+          {
+            "value": 1,
+            "max": 8
+          },
+          {
+            "value": 3,
+            "max": 8
+          },
+          {
+            "value": 5,
+            "max": 8
+          }
+        ],
+        "globalAndCardBarsMatch": true,
+        "savedOnOriginalItem": true
+      }
+    ],
+    "outputs": [
+      {
+        "mode": "krea",
+        "status": "completed",
+        "bytes": 117702,
+        "sha256": "a064c85818d641ef9d3d825fb460ae323fc8cc6b39868dd2ced5417a95d6a755",
+        "width": 432,
+        "height": 240
+      },
+      {
+        "mode": "krea",
+        "status": "completed",
+        "bytes": 93592,
+        "sha256": "9f4c600ebc6e7037359db50a1aae968302e77571808fdb31fd5eaf6516acb7d6",
+        "width": 432,
+        "height": 240
+      },
+      {
+        "mode": "krea",
+        "status": "completed",
+        "bytes": 81091,
+        "sha256": "cd1889370a1af81733acb41c18d2b748f1d12098b418fc70d205c337917d7a99",
+        "width": 432,
+        "height": 240
+      },
+      {
+        "mode": "krea",
+        "status": "completed",
+        "bytes": 105299,
+        "sha256": "418981bc8b00890e2ae61503dc4caa05f6db777aadc7d7ba4206a06b723128f6",
+        "width": 432,
+        "height": 240
+      },
+      {
+        "mode": "h3_i2v",
+        "status": "completed",
+        "bytes": 37766,
+        "sha256": "018f6d2fae4e6f2da3935b26fc9b221925874816d1c8f3582b3ad4c0501af52b",
+        "width": 416,
+        "height": 256,
+        "fps": 24.0,
+        "decodedFrames": 22,
+        "requestedSeconds": 0.5,
+        "actualSeconds": 0.9166666666666666
+      }
+    ],
+    "script": "frontend/tests/progress-live.mjs",
+    "realResultsNotMocks": true
+  },
+  "deepseek": {
+    "passed": true,
+    "model": "deepseek-flash",
+    "actualGuideReads": 2,
+    "imageEditReviewCancelled": true,
+    "taskCountUnchanged": true,
+    "chineseOperationExplanation": true,
+    "internalMetadataNotVisible": true,
+    "script": "frontend/tests/readable-agent.mjs"
+  },
+  "regressionFoundAndFixed": {
+    "before": "late loadedmetadata callback read a null video ref on project switch",
+    "reproducedWithUnhandledErrorAssertion": true,
+    "after": "events only update their current video element; stale detached events cannot access a cleared ref",
+    "dedicatedTestPassed": true,
+    "errorDisplayRetained": true
+  },
+  "exit": {
+    "applicationProcessId": 54728,
+    "ownedProcessIds": [
+      54728,
+      82240,
+      95464
+    ],
+    "allExited": true,
+    "comfyProcessId": 93516,
+    "comfyAlive": true,
+    "queueRunning": 0,
+    "queuePending": 0
+  },
+  "package": {
+    "exeSha256": "cf33d9bdb88ed13722836ec7ca04b09957ce38f13f3bed1596e6c3741ed25aa0",
+    "vueDistFiles": [
+      {
+        "file": "assets/index-BDRAxDum.js",
+        "sha256": "d48b59f7156f548a5b5e2d945f45743ee3ac2259a6910c25c66a58a1235ca17c",
+        "matchesPackage": true
+      },
+      {
+        "file": "assets/index-BNjXfUvl.css",
+        "sha256": "47d8061b2810c8cc3142a8df5557355d1ce6a31ddf7055afed1813220b9eb8f7",
+        "matchesPackage": true
+      },
+      {
+        "file": "index.html",
+        "sha256": "2687f59d644d12122da9b10165dc1283fb442126d2601ad985fbbdd60232be1c",
+        "matchesPackage": true
+      },
+      {
+        "file": "media/xy-logo.jpg",
+        "sha256": "5f8fb6214cc2d5d25cda015e5ede51ab1e9f9d3c9f7ccb503494e70eaa3f7b25",
+        "matchesPackage": true
+      }
+    ],
+    "dependenciesAndBuildPassed": true,
+    "apiKeysBundled": false
+  },
+  "compatibility": {
+    "projectSchema": 1,
+    "assetIdsUnchanged": true,
+    "credentialNamespaceUnchanged": true,
+    "comfyWorkflowsUnmodifiedThisTurn": true,
+    "noNewAutoVideoPlanRunner": true
+  },
+  "limits": [
+    "Progress is per processing step, not total ETA.",
+    "High resolution and long video combinations were not broadened.",
+    "AI receives text and paths; no image perception.",
+    "Creative quality was not an author acceptance test.",
+    "Native Windows file-picker point selection remains a manual boundary; Qt picker return and import flow are tested.",
+    "This run verifies idle exit; it does not add a GPU interruption or power-loss stress test.",
+    "Java snippets are explanatory fragments, not a compiled Java backend."
+  ]
+}

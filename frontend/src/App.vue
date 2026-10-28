@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isVideoMode } from './types';
 import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import {
   PanelLeft,
@@ -288,7 +289,7 @@ async function confirmGeneration() {
   else await store.queueGeneration(targetId.value, gen.value);
   modal.value = null;
   suggestion.value = null;
-  navigate(gen.value.mode.startsWith('h3') ? 'videos' : 'images');
+  navigate(isVideoMode(gen.value.mode) ? 'videos' : 'images');
   store.notify('任务已加入队列，完成后在素材库选择满意的结果');
 }
 async function cancelGeneration() {
@@ -376,7 +377,7 @@ function allCollapsed(value: boolean) {
 async function review(s: Suggestion) {
   suggestion.value = s;
   if (s.name === 'generate')
-    await openGenerate('', s.generation?.mode.startsWith('h3') ? 'video' : 'image', s);
+    await openGenerate('', isVideoMode(s.generation?.mode || '') ? 'video' : 'image', s);
   else modal.value = 'review';
 }
 async function persist() {
@@ -834,7 +835,7 @@ onBeforeUnmount(() => {
                     <TaskProgress :task="t" :paused="store.paused" />
                   </div>
                   <button
-                    v-if="['new', 'running', 'queued', 'cancel_requested'].includes(t.status)"
+                    v-if="t.canCancel ?? ['new', 'running', 'queued', 'cancel_requested'].includes(t.status)"
                     class="btn"
                     @click="store.cancelTask(t.id)"
                   >
@@ -877,6 +878,8 @@ onBeforeUnmount(() => {
                   >
                     再次生成
                   </button>
+                  <button v-if="t.canDetach" class="btn" @click="store.api('task.detach', { id: t.id })">停止本机查询（云端继续）</button>
+                  <p v-if="t.provider === 'pixstag'" class="form-note">Pixstag 任务 {{t.remoteId || '尚未取得 ID'}} · 已提交任务无取消接口，停止查询不停止计费。</p>
                   <details class="task-details">
                     <summary>生成详情</summary>
                     <p class="task-description">{{ t.prompt }}</p>
@@ -983,17 +986,17 @@ onBeforeUnmount(() => {
     <StudioDialog
       :open="modal === 'generate'"
       @update:open="(v) => !v && cancelGeneration()"
-      :title="gen.mode.startsWith('h3') ? '生成视频 · 参数审阅' : '生成图片 · 参数审阅'"
-      :description="`结果保存到${gen.mode.startsWith('h3') ? '视频库' : '图片库'}。满意后再手动添加到资产或分镜。`"
+      :title="isVideoMode(gen.mode) ? '生成视频 · 参数审阅' : '生成图片 · 参数审阅'"
+      :description="`结果保存到${isVideoMode(gen.mode) ? '视频库' : '图片库'}。满意后再手动添加到资产或分镜。`"
       ><form class="form-content" @submit.prevent="confirmGeneration">
         <div class="target-pill">
-          <Link2 :size="14" />{{ gen.mode.startsWith('h3') ? '视频库' : '图片库'
+          <Link2 :size="14" />{{ isVideoMode(gen.mode) ? '视频库' : '图片库'
           }}<span>生成后由你选用</span>
         </div>
         <GenerationForm v-model="gen" target-id="" />
         <footer class="dialog-actions">
           <button type="button" class="btn" @click="cancelGeneration">取消生成</button
-          ><button class="btn btn-primary">加入生成队列</button>
+          ><button class="btn btn-primary">{{gen.mode.startsWith('pixstag_') ? '确认调用 Pixstag（可能扣费）' : '加入生成队列'}}</button>
         </footer>
       </form></StudioDialog
     >

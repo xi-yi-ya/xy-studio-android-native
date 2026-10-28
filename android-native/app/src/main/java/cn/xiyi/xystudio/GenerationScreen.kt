@@ -11,6 +11,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,7 @@ private fun GenerationSection(number: String, title: String, content: @Composabl
 @Composable
 fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
     val draftKey = initial.toString()
-    val video = initial.optString("mode").startsWith("h3")
+    val video = GenerationRules.isVideo(initial.optString("mode"))
     var mode by rememberSaveable(draftKey) { mutableStateOf(initial.optString("mode")) }
     var prompt by rememberSaveable(draftKey) { mutableStateOf(initial.optString("prompt")) }
     var ratio by rememberSaveable(draftKey) { mutableStateOf(initial.optString("ratio", "16:9")) }
@@ -48,16 +49,35 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
     var quad by rememberSaveable(draftKey) { mutableStateOf(initial.optBoolean("quad_lora", true)) }
     var styles by rememberSaveable(draftKey) { mutableStateOf(initial.strings("styles")) }
     var refs by rememberSaveable(draftKey) { mutableStateOf(initial.strings("references")) }
+    var videoRefs by rememberSaveable(draftKey) { mutableStateOf(initial.strings("video_references")) }
+    var apiModel by rememberSaveable(draftKey) { mutableStateOf(initial.optString("api_model","MiniMax-H3")) }
+    var apiResolution by rememberSaveable(draftKey) { mutableStateOf(initial.optString("api_resolution","720P")) }
+    var apiWatermark by rememberSaveable(draftKey) { mutableStateOf(initial.optBoolean("api_watermark",false)) }
+    var apiContextIr by rememberSaveable(draftKey) { mutableStateOf(initial.optBoolean("api_context_ir",true)) }
+    var apiLastFrame by rememberSaveable(draftKey) { mutableStateOf(initial.optBoolean("api_last_frame",true)) }
     var advanced by rememberSaveable(draftKey) { mutableStateOf(false) }
     var choosing by rememberSaveable { mutableStateOf(false) }
+    var choosingVideo by rememberSaveable { mutableStateOf(false) }
     var discard by remember { mutableStateOf(false) }
     var validation by remember { mutableStateOf("") }
     var confirmed by remember { mutableStateOf<JSONObject?>(null) }
     var output by remember { mutableStateOf<JSONObject?>(null) }
     val focus = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
     val catalog = vm.state.optJSONObject("catalog") ?: JSONObject()
     val modes = catalog.optJSONObject("modes") ?: JSONObject()
     val range = GenerationRules.referenceRange(mode)
+    val cloud = GenerationRules.isCloud(mode)
+    val apiCatalog=catalog.optJSONObject("pixstag") ?: JSONObject()
+
+    fun changeMode(next: String) {
+        focus.clearFocus();keyboard?.hide()
+        mode=next;steps="0";validation=""
+        if(GenerationRules.isCloud(next)) {
+            if(seconds.toDoubleOrNull()?.let{it in 4.0..30.0 && it%1.0==0.0}!=true)seconds="5"
+            if(ratio !in apiCatalog.strings("ratios"))ratio="16:9"
+        } else if(ratio=="adaptive")ratio="16:9"
+    }
 
     fun close() { vm.generation = null; vm.generationReviewId = null }
     fun value(): JSONObject {
@@ -69,6 +89,9 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
             put("cinema", cinema); put("qwen_int8", int8); put("edit_follow_source", follow)
             put("quad_lora", quad); put("styles", JSONArray(styles))
             put("references", JSONArray(if (range.last == 0) emptyList<String>() else refs))
+            put("video_references", JSONArray(if(mode=="pixstag_ref")videoRefs else emptyList<String>()))
+            put("api_model",apiModel);put("api_resolution",apiResolution);put("api_watermark",apiWatermark)
+            put("api_context_ir",apiContextIr);put("api_last_frame",apiLastFrame)
         }
         GenerationRules.validate(g)?.let { throw IllegalArgumentException(it) }
         return g.apply {
@@ -89,8 +112,12 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
                 }
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     GenerationSection("01", "选择创作方式") {
-                        Choice("工作流", mode, modes.keys().asSequence().filter { it.startsWith("h3") == video }.map { it to modes.getString(it) }.toList()) {
-                            mode = it; steps = "0"; validation = ""
+                        if(video)Choice("生成来源",if(cloud)"pixstag" else "comfy",listOf("comfy" to "本地 ComfyUI","pixstag" to "Pixstag 云端 API")){changeMode(if(it=="pixstag")if(refs.isNotEmpty())"pixstag_i2v" else "pixstag_t2v" else if(refs.isNotEmpty())"h3_i2v" else "h3_t2v")}
+                        Choice("工作流", mode, modes.keys().asSequence().filter { GenerationRules.isVideo(it) == video && GenerationRules.isCloud(it)==cloud }.map { it to modes.getString(it) }.toList()) {changeMode(it)}
+                        if(cloud) {
+                            Choice("Pixstag 模型",apiModel,apiCatalog.strings("models").map{it to it}){apiModel=it}
+                            Text("由 PC 调用云端 API，可能扣除账户积分；确认后上传提示词和参考素材。",style=MaterialTheme.typography.bodySmall)
+                            if(vm.state.optJSONObject("config")?.optBoolean("pixstagKeySet")!=true)Text("请先在 PC 设置保存 Pixstag API Key；手机不接收密钥。",color=MaterialTheme.colorScheme.error,style=MaterialTheme.typography.bodySmall)
                         }
                         Text(if (video) "图生视频让已有图片动起来；文生视频从文字开始。" else "直接生成新图，或选取项目图片进行编辑。", style = MaterialTheme.typography.bodySmall)
                     }
@@ -106,7 +133,7 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     AssetImage(vm, record?.optString("media") ?: "", "参考 ${index + 1}", Modifier.size(72.dp).clickable { vm.previewFile(file) })
                                     Column(Modifier.weight(1f).padding(start = 10.dp)) {
-                                        Text(if (mode == "h3_fl2v") if (index == 0) "首帧" else "尾帧" else "参考 ${index + 1}", style = MaterialTheme.typography.labelLarge)
+                                        Text(if (mode in listOf("h3_fl2v","pixstag_fl2v")) if (index == 0) "首帧" else "尾帧" else "参考 ${index + 1}", style = MaterialTheme.typography.labelLarge)
                                         Text(record?.optString("name") ?: "已有项目图片", maxLines = 1, style = MaterialTheme.typography.bodySmall)
                                         Row {
                                             if (refs.size > 1) TextButton(onClick = { refs = refs.toMutableList().apply { add(index - 1, removeAt(index)) } }, enabled = index > 0) { Text("上移") }
@@ -115,8 +142,18 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
                                     }
                                 }
                             }
-                            OutlinedButton(onClick = { choosing = true }, modifier = Modifier.fillMaxWidth().testTag("chooseReferences")) { Text("选择参考图片 · ${refs.size}/${range.last}") }
+                            OutlinedButton(onClick = { focus.clearFocus(); keyboard?.hide(); choosing = true }, modifier = Modifier.fillMaxWidth().testTag("chooseReferences")) { Text("选择参考图片 · ${refs.size}/${range.last}") }
                             if (refs.size > range.last) Text("切换工作流后请移除多余参考图", color = MaterialTheme.colorScheme.error)
+                        }
+                        if(mode=="pixstag_ref") {
+                            Text("参考视频 · MP4，每个不超过 5 MB",style=MaterialTheme.typography.labelLarge)
+                            videoRefs.forEachIndexed { index,file ->
+                                Row(verticalAlignment=Alignment.CenterVertically) {
+                                    Text(vm.references.find{it.optString("file")==file}?.optString("name") ?: "参考视频 ${index+1}",Modifier.weight(1f))
+                                    TextButton(onClick={videoRefs=videoRefs-file}){Text("移除")}
+                                }
+                            }
+                            OutlinedButton(onClick={focus.clearFocus();keyboard?.hide();choosingVideo=true},modifier=Modifier.fillMaxWidth().testTag("chooseVideoReferences")){Text("选择参考视频 · ${videoRefs.size}/3")}
                         }
                     }
                     GenerationSection("03", "输出设置") {
@@ -130,20 +167,28 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
                                     FilterChip(ratio == id, { ratio = id }, label = { Text(label) })
                                 }
                             }
-                            Choice("更多比例", ratio, catalog.strings("ratios").map { it to it }) { ratio = it }
-                            NumericField("像素量 MP", mp, { mp = it })
-                            Text("像素量越高，对 PC 显存与时间的要求越高。", style = MaterialTheme.typography.bodySmall)
+                            Choice("更多比例", ratio, (if(cloud)apiCatalog else catalog).strings("ratios").map { it to it }) { ratio = it }
+                            if(cloud)Choice("清晰度",apiResolution,apiCatalog.strings("resolutions").map{it to it}){apiResolution=it}
+                            else {
+                                NumericField("像素量 MP", mp, { mp = it })
+                                Text("像素量越高，对 PC 显存与时间的要求越高。", style = MaterialTheme.typography.bodySmall)
+                            }
                         }
                         if (video) {
                             NumericField("视频秒数", seconds, { seconds = it })
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                listOf("2", "5", "10").forEach { s -> FilterChip(seconds.toDoubleOrNull() == s.toDouble(), { seconds = s }, label = { Text("$s 秒") }) }
+                                (if(cloud)listOf("5","10","15") else listOf("2", "5", "10")).forEach { s -> FilterChip(seconds.toDoubleOrNull() == s.toDouble(), { seconds = s }, label = { Text("$s 秒") }) }
                             }
-                            Text("最终时长按 PC 工作流的帧数规则对齐，下一步显示实际输出。", style = MaterialTheme.typography.bodySmall)
+                            Text(if(cloud)"4–30 整数秒；最终规格以 Pixstag 返回的结果为准。" else "最终时长按 PC 工作流的帧数规则对齐，下一步显示实际输出。", style = MaterialTheme.typography.bodySmall)
                         }
                         if (mode == "upscale") NumericField("放大倍率", scale, { scale = it })
                     }
-                    GenerationSection("04", "采样与高级选项") {
+                    if(cloud)GenerationSection("04","云端选项") {
+                        Row(verticalAlignment=Alignment.CenterVertically){Checkbox(apiContextIr,{apiContextIr=it});Text("Context-IR 提示词优化")}
+                        Row(verticalAlignment=Alignment.CenterVertically){Checkbox(apiWatermark,{apiWatermark=it});Text("AIGC 标识水印")}
+                        Row(verticalAlignment=Alignment.CenterVertically){Checkbox(apiLastFrame,{apiLastFrame=it});Text("请求返回尾帧")}
+                        Text("已提交任务无取消接口；停止本机查询也不会停止云端生成或计费。大于 3 MB 的图片会压缩上传副本，PC 原图保留。",style=MaterialTheme.typography.bodySmall)
+                    } else GenerationSection("04", "采样与高级选项") {
                         NumericField("采样步数 (0 自动)", steps, { steps = it })
                         Text("0 使用 PC 工作流默认步数；低步数适合快速测试。", style = MaterialTheme.typography.bodySmall)
                         TextButton(onClick = { advanced = !advanced }, modifier = Modifier.testTag("advancedParameters")) { Text(if (advanced) "收起高级参数" else "展开高级参数 · 种子 / 模型选项") }
@@ -168,7 +213,7 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
                         val issue = validation.ifEmpty { vm.error }.ifEmpty { if (!vm.connected) "PC 连接已断开，请恢复连接后继续" else "" }
                         if (issue.isNotEmpty()) Text(issue, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                         Button(onClick = {
-                            focus.clearFocus()
+                            focus.clearFocus();keyboard?.hide()
                             try {
                                 val g = value(); validation = ""
                                 vm.action { output = vm.call("generation.preview", obj("generation" to g)) as JSONObject; confirmed = g }
@@ -182,6 +227,7 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
         }
     }
     if (choosing) ReferencePicker(vm, refs, range.last, { refs = it }, { choosing = false })
+    if (choosingVideo) ReferencePicker(vm, videoRefs, 3, { videoRefs=it }, { choosingVideo=false },kind="video")
     if (discard) AlertDialog(onDismissRequest = { discard = false }, title = { Text("离开生成编辑？") },
         text = { Text("当前未提交的参数将被放弃，PC 中的项目和任务不受影响。") },
         confirmButton = { TextButton(onClick = { close() }) { Text("放弃并关闭") } },
@@ -191,28 +237,35 @@ fun GenerationDialog(vm: StudioViewModel, initial: JSONObject) {
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(modes.optString(g.optString("mode")), fontWeight = FontWeight.Bold)
-                    Text("${output?.optInt("width")} × ${output?.optInt("height")} · ${output?.optInt("steps")} 步", style = MaterialTheme.typography.titleMedium)
-                    if (video) Text("${output?.optInt("frames")} 帧 / 24 fps · 实际约 ${"%.2f".format(output?.optDouble("seconds"))} 秒")
-                    Text("参考图片 ${g.strings("references").size} 张 · 种子 ${g.optString("seed")}", style = MaterialTheme.typography.bodySmall)
+                    if(cloud) {
+                        Text("${g.optString("api_model")} · ${g.optString("api_resolution")} · ${g.optString("ratio")} · ${g.optDouble("seconds").toInt()} 秒",style=MaterialTheme.typography.titleMedium)
+                        Text(output?.optString("notice") ?: "确认调用 Pixstag，可能消耗账户积分。",color=MaterialTheme.colorScheme.primary)
+                        Text("参考图片 ${g.strings("references").size} 张 · 视频 ${g.strings("video_references").size} 个")
+                        output?.rows("references")?.filter{it.optBoolean("converted")}?.let{if(it.isNotEmpty())Text("${it.size} 张图片将使用转换压缩副本上传。")}
+                    } else {
+                        Text("${output?.optInt("width")} × ${output?.optInt("height")} · ${output?.optInt("steps")} 步", style = MaterialTheme.typography.titleMedium)
+                        if (video) Text("${output?.optInt("frames")} 帧 / 24 fps · 实际约 ${"%.2f".format(output?.optDouble("seconds"))} 秒")
+                        Text("参考图片 ${g.strings("references").size} 张 · 种子 ${g.optString("seed")}", style = MaterialTheme.typography.bodySmall)
+                    }
                     Text(g.optString("prompt"), maxLines = 8)
                     Text("结果保存到「${vm.project?.optString("name") }」的${if (video) "视频库" else "图片库"}。提交后可在任务页查看真实进度。", style = MaterialTheme.typography.bodySmall)
                     if (vm.project?.optBoolean("paused") == true) Text("PC 队列已暂停，任务将等待队列继续。", color = MaterialTheme.colorScheme.error)
                     if (vm.error.isNotEmpty()) Text(vm.error, color = MaterialTheme.colorScheme.error)
                 }
             },
-            confirmButton = { Button(onClick = { vm.submitGeneration(g) }, enabled = vm.connected && !vm.working, modifier = Modifier.testTag("submitGeneration")) { Text(if (vm.working) "正在提交…" else "确认并加入 PC 队列") } },
+            confirmButton = { Button(onClick = { vm.submitGeneration(g) }, enabled = vm.connected && !vm.working && (!cloud || output?.optBoolean("keySet")==true), modifier = Modifier.testTag("submitGeneration")) { Text(if (vm.working) "正在提交…" else if(cloud)"确认调用 Pixstag（可能扣费）" else "确认并加入 PC 队列") } },
             dismissButton = { TextButton(onClick = { confirmed = null }, enabled = !vm.working) { Text("返回修改") } })
     }
 }
 
 @Composable
-private fun ReferencePicker(vm: StudioViewModel, selected: List<String>, maximum: Int, change: (List<String>) -> Unit, close: () -> Unit) {
+private fun ReferencePicker(vm: StudioViewModel, selected: List<String>, maximum: Int, change: (List<String>) -> Unit, close: () -> Unit,kind:String="image") {
     var query by rememberSaveable { mutableStateOf("") }
-    val images = vm.references.filter { it.optString("name").contains(query, ignoreCase = true) }
+    val images = vm.references.filter { it.optString("kind")==kind && (kind!="video" || it.optString("file").endsWith(".mp4",true)) && it.optString("name").contains(query, ignoreCase = true) }
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
             Column(Modifier.imePadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("选择项目图片", style = MaterialTheme.typography.headlineSmall)
+                Text(if(kind=="video")"选择项目视频" else "选择项目图片", style = MaterialTheme.typography.headlineSmall)
                 Text("已选 ${selected.size}/$maximum · 按选择顺序排列", style = MaterialTheme.typography.bodySmall)
                 OutlinedTextField(query, { query = it }, label = { Text("搜索参考图片") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 if (selected.size >= maximum) Text("已达数量上限，先取消一张再选择其他图片。", style = MaterialTheme.typography.bodySmall)

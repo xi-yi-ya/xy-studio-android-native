@@ -11,3 +11,9 @@ XY Studio 的 0BSD 许可适用于本项目原创代码，不替代第三方组�
 - UI 截图和原型参考图用于展示与测试；其中的第三方角色、商标、模型生成结果等不因本项目许可获得额外权利。
 
 0BSD 原文与识别信息：[OSI](https://opensource.org/license/0bsd)、[SPDX](https://spdx.org/licenses/0BSD.html)。
+
+## Android / LAN / 云端适配
+
+- Kotlin、AndroidX / Jetpack Compose / Media3、OkHttp、Coil 与 Gradle 保留其各自许可；具体版本见 android-native/ 的 Gradle 文件，分发的 APK 不包含签名私钥。AndroidX / Kotlin / OkHttp 等组件采用 Apache-2.0 等原许可，不能改为本项目的 0BSD。
+- LAN 服务使用 aiohttp 及相关依赖，版本与许可以 requirements-lan.txt 和发行包 THIRD_PARTY_LICENSES 中元数据为准。
+- Pixstag、DeepSeek 为外部服务，按各平台条款和账户规则使用；不随本项目分发账户、API Key 或额度。

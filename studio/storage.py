@@ -5,6 +5,7 @@ import uuid
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from .workflows import is_video
 
 def uid(): return uuid.uuid4().hex
 def now(): return datetime.now(timezone.utc).isoformat()
@@ -108,7 +109,7 @@ class Project:
         try: item=self.get(job['target'])
         except ValueError: return
         if any(v.get('job')==job['id'] and v['file']==relative for v in item['versions']): return
-        media='video' if job['generation']['mode'].startswith('h3') else 'image'
+        media='video' if is_video(job['generation']['mode']) else 'image'
         version={'id':uid(),'time':now(),'job':job['id'],'kind':media,'file':relative,
                  'intent':job['generation']['prompt'],'materials':job.get('materials',[])}
         item['versions'].append(version); item[media]=relative

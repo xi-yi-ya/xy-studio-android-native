@@ -1,0 +1,138 @@
+{
+  "version": "1.2.1",
+  "validatedAtUtc": "2026-10-11T06:48:58.283940+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "qt": "6.12.0",
+    "desktop": "Vue + QWebEngineView + QWebChannel; in-process Python"
+  },
+  "pythonTests": {
+    "passed": 136,
+    "log": "local-data/v121-python-tests-final.log",
+    "additionalLibrarySafetyAssertions": 8,
+    "obsoleteNativeDropTestRemovedBecauseFeatureRemoved": true
+  },
+  "frontend": {
+    "typecheck": true,
+    "viteBuild": true,
+    "packagedBundleMatchesSource": true,
+    "files": [
+      {
+        "file": "index.html",
+        "sha256": "41b0d018cf5bbaf79cc030c9ee637fdc2188c111a90a8e1ad43c0b8db83314ab"
+      },
+      {
+        "file": "assets/index-CjxoWma1.css",
+        "sha256": "50fd7fce3f36b73b4d5b5a59db18726ce7edf6c39ef881d8737338033d1a4d46"
+      },
+      {
+        "file": "assets/index-CQz6s5jF.js",
+        "sha256": "efd3889fd162c55967235debc46a6d014abf8f699c7e2556851b6d317d634072"
+      },
+      {
+        "file": "media/xy-logo.jpg",
+        "sha256": "5f8fb6214cc2d5d25cda015e5ede51ab1e9f9d3c9f7ccb503494e70eaa3f7b25"
+      }
+    ]
+  },
+  "desktopTests": {
+    "sourcePassed": 24,
+    "packagePassed": 24,
+    "sourceRuns": [
+      "local-data/v121-source-ui.log",
+      "local-data/v121-source-history-delete.log"
+    ],
+    "packageRun": "local-data/v121-package-ui.log",
+    "noMockBackend": true,
+    "coverage": [
+      "library delete/cancel/restore/reopen",
+      "AI reference removal",
+      "current-media protection",
+      "generated historical image/video original bytes and job history",
+      "drag events prevented and legacy event ignored",
+      "existing project/media/history/queue/2K/4K tests"
+    ]
+  },
+  "realApi": {
+    "source": {
+      "version": "v121-source",
+      "realApi": true,
+      "generate": false,
+      "passed": true,
+      "errors": [],
+      "progress": [],
+      "project": "D:\\Flie\\Repository\\AI-Story-Studio\\local-data\\v121-user-repro",
+      "model": "deepseek-flash",
+      "review": {
+        "name": "generate",
+        "mode": "qwen",
+        "references": [],
+        "steps": 0
+      }
+    },
+    "package": {
+      "version": "v121-package",
+      "realApi": true,
+      "generate": true,
+      "passed": true,
+      "errors": [],
+      "progress": [
+        1,
+        11
+      ],
+      "project": "D:\\Flie\\Repository\\AI-Story-Studio\\local-data\\v121-package-user-repro",
+      "model": "deepseek-flash",
+      "review": {
+        "name": "generate",
+        "mode": "qwen",
+        "references": [],
+        "steps": 0
+      },
+      "job": "085e56e08cf445e99a2d89e072a91c81",
+      "output": "outputs/085e56e08cf445e99a2d89e072a91c81/a2ccbc8febe74f2b85ffd6d4f85b1f0f.png",
+      "generatedDeleteRestore": true
+    },
+    "actualGeneration": {
+      "mode": "qwen",
+      "steps": 40,
+      "megapixels": 0.2,
+      "outputDimensions": [
+        608,
+        352
+      ],
+      "status": "completed"
+    },
+    "videoInferenceRerun": false
+  },
+  "preservation": {
+    "originalProjectUnchanged": true,
+    "originalSha256": "9bd53064630b0ffb14930ea821e470bf540309a9caf6667513aaf2e6ddbdbffd",
+    "baselineSha256": "9bd53064630b0ffb14930ea821e470bf540309a9caf6667513aaf2e6ddbdbffd",
+    "recentProjectsRestored": true
+  },
+  "exit": {
+    "qaOwnedPids": [
+      93316,
+      103940,
+      65240,
+      101248,
+      52720,
+      101040,
+      86924
+    ],
+    "comfyListening": true,
+    "qaStillAlive": [],
+    "userV120Running": true,
+    "comfyPid": 93516
+  },
+  "publication": {
+    "uploaded": false,
+    "remotePush": false
+  },
+  "limitations": [
+    "Recycle bin retains original bytes and does not reclaim disk space",
+    "Older versions do not filter media_trash",
+    "Live tests use copies of original user project",
+    "Model correction bounded to two retries; not a guarantee against every wrong suggestion"
+  ]
+}

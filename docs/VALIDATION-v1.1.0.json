@@ -1,0 +1,328 @@
+{
+  "version": "1.1.0",
+  "validatedAtUtc": "2026-10-10T16:17:57.079466+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "qt": "6.12.0",
+    "platform": "win32",
+    "desktop": "Packaged Vue + QWebEngineView + QWebChannel",
+    "comfyPort": 8188
+  },
+  "pythonTests": {
+    "passed": 109,
+    "originalTestsRetained": true,
+    "command": ".venv/Scripts/python.exe -m pytest tests --basetemp local-data/pytest-v110-release -q"
+  },
+  "desktopTests": {
+    "passed": 15,
+    "realWindowsExe": true,
+    "fixtureCopiesOnly": true,
+    "command": "XY_CDP=http://127.0.0.1:9226 XY_VALIDATION_VERSION=v110 XY_LEGACY=local-data/v032-compat npm test (frontend directory)",
+    "resolutions": [
+      [
+        1920,
+        1080
+      ],
+      [
+        2560,
+        1440
+      ],
+      [
+        3840,
+        2160
+      ],
+      [
+        1024,
+        768
+      ]
+    ],
+    "zoom": 1.25,
+    "shotStressCount": 41,
+    "mediaPaginationImages": 33,
+    "perReferenceRemoval": true,
+    "removeWithoutSelection": true,
+    "clearReferences": true,
+    "fullHistoricalImageChooser": true,
+    "actualVideoPlayback": true,
+    "errorsRemainVisible": true
+  },
+  "realInference": {
+    "packagedQwenJobs": 3,
+    "sourceQwenJobs": 3,
+    "outputs": [
+      {
+        "mode": "qwen_edit",
+        "qwenInt8": true,
+        "followPrimaryReference": true,
+        "steps": 16,
+        "megapixels": 0.1,
+        "actual": {
+          "width": 448,
+          "height": 256,
+          "pngBitDepth": 8,
+          "sha256": "975b055bcba719302a0c84ee975045840ffdc514a82e1075245225a947a371e0"
+        },
+        "measuredUiSamples": 4,
+        "distinctMeasuredSteps": [
+          [
+            9,
+            16
+          ]
+        ]
+      },
+      {
+        "mode": "qwen_edit",
+        "qwenInt8": true,
+        "followPrimaryReference": false,
+        "steps": 16,
+        "megapixels": 0.1,
+        "actual": {
+          "width": 320,
+          "height": 320,
+          "pngBitDepth": 8,
+          "sha256": "9fe064c5777b9427a27e76edc5655b356c362cd3b20df8639e229be6a7856a19"
+        },
+        "measuredUiSamples": 6,
+        "distinctMeasuredSteps": [
+          [
+            5,
+            16
+          ],
+          [
+            13,
+            16
+          ]
+        ]
+      },
+      {
+        "mode": "qwen",
+        "qwenInt8": false,
+        "followPrimaryReference": null,
+        "steps": 16,
+        "megapixels": 0.2,
+        "actual": {
+          "width": 608,
+          "height": 352,
+          "pngBitDepth": 16,
+          "sha256": "39b3e91ba281a52eb87d8a46912d218bdf3a8e6d89dc101aa37e58e9ed46b10d"
+        },
+        "measuredUiSamples": 21,
+        "distinctMeasuredSteps": [
+          [
+            7,
+            16
+          ],
+          [
+            2,
+            16
+          ],
+          [
+            13,
+            16
+          ],
+          [
+            10,
+            16
+          ],
+          [
+            5,
+            16
+          ],
+          [
+            1,
+            16
+          ]
+        ]
+      }
+    ],
+    "correctOriginalHistoryOwnership": true,
+    "realStepProgressGlobalAndCardMatch": true,
+    "script": "frontend/tests/qwen-live.mjs",
+    "default40StepsNotFullyRendered": true,
+    "oldH3VideoPlayback": "Actual v1.0.0 H3 output copy, not new video inference this turn"
+  },
+  "deepseek": {
+    "model": "deepseek-flash",
+    "actualReadOnlyQueries": [
+      {
+        "type": "asset_query",
+        "kind": "image",
+        "total": 33,
+        "returned": 33
+      },
+      {
+        "type": "asset_query",
+        "kind": "video",
+        "total": 2,
+        "returned": 2
+      }
+    ],
+    "expectedInventory": {
+      "images": {
+        "imported": 28,
+        "generated": 5,
+        "project": 0,
+        "all": 33,
+        "missing": 0
+      },
+      "videos": {
+        "imported": 1,
+        "generated": 1,
+        "project": 0,
+        "all": 2,
+        "missing": 0
+      }
+    },
+    "readOnly": true,
+    "noInternalJsonOrPathsInReply": true,
+    "actualImageEditReviewAndCancel": true,
+    "taskCountUnchanged": true,
+    "actualGuideReads": 2,
+    "scripts": [
+      "frontend/tests/asset-query-live.mjs",
+      "frontend/tests/readable-agent.mjs"
+    ]
+  },
+  "compatibility": {
+    "passed": true,
+    "frozenVersion": "1.0.0",
+    "openedNewProject": true,
+    "schema": 1,
+    "completedJobs": 3,
+    "versions": 3,
+    "idsUnchanged": true,
+    "previewAndSave": true,
+    "credentialNamespaceUnchanged": true,
+    "oldOriginalsUnmodified": true,
+    "noProjectMigration": true,
+    "allOriginalIdsCompared": true,
+    "frozenArchiveSha256Unchanged": true
+  },
+  "exit": {
+    "comfyAlive": true,
+    "queueRunning": 0,
+    "allExited": true,
+    "queuePending": 0,
+    "comfyProcessId": 93516,
+    "ownedProcessIds": [
+      94724,
+      75216,
+      98308,
+      101152,
+      92912,
+      90632
+    ]
+  },
+  "package": {
+    "exeSha256": "2089743cde52db0a16ba9c97f58fb49820e03372c1e127b70a097fe10e8d0db0",
+    "vueDist": [
+      {
+        "file": "assets/index-D58dsrtf.css",
+        "sha256": "65f81fc8b903755451f0e285f6de6401b648b760543b1b4361bd38951257f119",
+        "matchesPackage": true
+      },
+      {
+        "file": "assets/index-DI8SRo-c.js",
+        "sha256": "55457fa096644a82441454bd6580b282e7edc2d77075722c7404bcd68f5e65ac",
+        "matchesPackage": true
+      },
+      {
+        "file": "index.html",
+        "sha256": "f702d408cf6a48a490354c83526f00528b495abd8b161801f7a02adf042f8e7f",
+        "matchesPackage": true
+      },
+      {
+        "file": "media/xy-logo.jpg",
+        "sha256": "5f8fb6214cc2d5d25cda015e5ede51ab1e9f9d3c9f7ccb503494e70eaa3f7b25",
+        "matchesPackage": true
+      }
+    ],
+    "apiKeysBundled": false,
+    "buildPassed": true
+  },
+  "approvedWorkflows": [
+    {
+      "file": "image_qwen_image_2_1_t2i.json",
+      "sha256": "5a4fb633a8ea95b7137a23ee56b5068e5d8a919f4ddbb51defa2f22e8bc533f4",
+      "approvedVersion": "1.1.0",
+      "mode": "qwen",
+      "model": "qwen_image_2.1_bf16.safetensors",
+      "clip": "qwen3vl_8b_bf16.safetensors",
+      "vae": "qwen_image_2.1_vae_bf16.safetensors",
+      "sampling": {
+        "steps": 40,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      },
+      "export": {
+        "format": "png",
+        "format.bit_depth": "16-bit",
+        "format.input_color_space": "sRGB"
+      },
+      "userParameters": [
+        "prompt",
+        "seed",
+        "references in original order",
+        "output prefix isolated by project job"
+      ],
+      "resolution": {
+        "aspect_ratio": "16:9 (Widescreen)",
+        "megapixels": 6.6,
+        "multiple": 8
+      }
+    },
+    {
+      "file": "image_qwen_image_2_1_image_edit.json",
+      "sha256": "a1bb0560c93f2c012dc061dfd8d98e226ef166f4cffd90706316ce2e93337326",
+      "approvedVersion": "1.1.0",
+      "mode": "qwen_edit",
+      "model": "qwen_image_2.1_int8_convrot.safetensors",
+      "clip": "qwen3vl_8b_int8_convrot.safetensors",
+      "vae": "qwen_image_2.1_vae_bf16.safetensors",
+      "sampling": {
+        "steps": 40,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1
+      },
+      "export": {
+        "format": "png",
+        "format.bit_depth": "8-bit",
+        "format.input_color_space": "sRGB"
+      },
+      "userParameters": [
+        "prompt",
+        "seed",
+        "references in original order",
+        "output prefix isolated by project job"
+      ],
+      "cache": {
+        "device": "auto",
+        "dtype": "default"
+      },
+      "referenceProcessing": "Original ordered images, no preprocessing center crop; resolution=0.",
+      "defaultOutput": "First reference image encoder latent; 32 px alignment.",
+      "customOutput": "Explicit GUI custom canvas selection uses empty latent, matching the supplied switch alternative."
+    }
+  ],
+  "qaCorrections": [
+    "The test observer was changed to sample reactive state and DOM within one browser frame; RPC-vs-render races are not product progress failures.",
+    "Four-step tiny cached inference finished between display intervals; 16-step low-resolution verification then captured multiple real samples.",
+    "The deletion fixture was corrected to use complete valid Generation parameters; error reporting was kept.",
+    "Copied active project lock was removed only from the dedicated compatibility fixture; frozen EXE readback then passed."
+  ],
+  "limits": [
+    "Asset inventory covers current-project retained originals, not external ComfyUI-only output files.",
+    "AI has metadata queries, no pixel/video perception.",
+    "Reference removal applies to future messages; it does not erase old chat or cancel an already sent API request.",
+    "Video imports are query/preview assets, not H3 video references.",
+    "High resolution/long video and power-loss stress tests were not added.",
+    "16-bit originals preserved; browser display is not 16-bit color QA.",
+    "Very short processing steps can complete between UI updates.",
+    "No automatic story-to-video dependency executor added.",
+    "Native picker manual point-selection boundary unchanged."
+  ]
+}

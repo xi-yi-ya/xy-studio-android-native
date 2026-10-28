@@ -1,0 +1,445 @@
+{
+  "date": "2026-10-10",
+  "unit_tests": 79,
+  "desktop_regression_tests": 8,
+  "real_generation_matrix": [
+    {
+      "name": "Qwen 文生图",
+      "mode": "qwen",
+      "status": "completed",
+      "job": "accc85a4b22a48019d8a1ae938ce9f25",
+      "target": "7ed663058dd744d2a9b2e1a5b5ef68d6",
+      "seconds": 8.727,
+      "megapixels": 0.1,
+      "steps": 4,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_image_size": [
+        416,
+        256
+      ]
+    },
+    {
+      "name": "Qwen 图片编辑",
+      "mode": "qwen_edit",
+      "status": "completed",
+      "job": "b65c4d034e364c0fba4b06c6e98777b0",
+      "target": "7ed663058dd744d2a9b2e1a5b5ef68d6",
+      "seconds": 3.641,
+      "megapixels": 0.1,
+      "steps": 4,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_image_size": [
+        416,
+        256
+      ]
+    },
+    {
+      "name": "Krea2 无 LoRA",
+      "mode": "krea",
+      "status": "completed",
+      "job": "ab6636da03d74c26b64e2f28e222dc2f",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 7.206,
+      "megapixels": 0.1,
+      "steps": 4,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA darkbrush",
+      "mode": "krea",
+      "status": "completed",
+      "job": "5c57012210814b50a563a1ee9310c3f4",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 5.697,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "darkbrush"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA dotmatrix",
+      "mode": "krea",
+      "status": "completed",
+      "job": "7705fe8800c941a093d6a604ebfbfc9d",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 6.309,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "dotmatrix"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA kidsdrawing",
+      "mode": "krea",
+      "status": "completed",
+      "job": "64d575803eb74c12bcabe8c96b16b0c6",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 5.759,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "kidsdrawing"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA neondrip",
+      "mode": "krea",
+      "status": "completed",
+      "job": "276876b380c34b2988ce1cd8c3a889bc",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 6.337,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "neondrip"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA rainywindow",
+      "mode": "krea",
+      "status": "completed",
+      "job": "eff4d95bf94b4bc6bc684c582bff5a80",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 6.371,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "rainywindow"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA retroanime",
+      "mode": "krea",
+      "status": "completed",
+      "job": "96f60482a94e4b0f9bffa79d339fc130",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 6.349,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "retroanime"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA softwatercolor",
+      "mode": "krea",
+      "status": "completed",
+      "job": "6c8215a0191a4715a0a49d1a5404ac32",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 6.367,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "softwatercolor"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA sunsetblur",
+      "mode": "krea",
+      "status": "completed",
+      "job": "df3297fa7b644a2dbe510875a9ccf773",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 6.372,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "sunsetblur"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "Krea2 LoRA vintagetarot",
+      "mode": "krea",
+      "status": "completed",
+      "job": "dcaa3ec2325343b9ba60075541e08f6a",
+      "target": "4fbd8173796b41ca9f9d4b0032a4702d",
+      "seconds": 5.845,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [
+        "vintagetarot"
+      ],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "四视图 LoRA 开启",
+      "mode": "quad",
+      "status": "completed",
+      "job": "589933bca0de403db2ae5f6cfa5362eb",
+      "target": "7ed663058dd744d2a9b2e1a5b5ef68d6",
+      "seconds": 9.578,
+      "megapixels": 0.1,
+      "steps": 4,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "四视图 LoRA 关闭",
+      "mode": "quad",
+      "status": "completed",
+      "job": "49fab7e8077c4b22a3a3e8dd11635729",
+      "target": "7ed663058dd744d2a9b2e1a5b5ef68d6",
+      "seconds": 6.974,
+      "megapixels": 0.1,
+      "steps": 4,
+      "cinema": false,
+      "quad_lora": false,
+      "styles": [],
+      "scale": 1.5,
+      "actual_image_size": [
+        432,
+        240
+      ]
+    },
+    {
+      "name": "RFMSR 1.5 倍",
+      "mode": "upscale",
+      "status": "completed",
+      "job": "2d3c499d38984c69abf437c83b1471cc",
+      "target": "7ed663058dd744d2a9b2e1a5b5ef68d6",
+      "seconds": 28.138,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_image_size": [
+        624,
+        384
+      ]
+    },
+    {
+      "name": "h3_i2v",
+      "mode": "h3_i2v",
+      "status": "completed",
+      "job": "ca3b3b4b970640219c69af063417c937",
+      "target": "716a5d77c78741aa977fc9ef871e41c8",
+      "seconds": 20.572,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_video_size": [
+        416,
+        256
+      ],
+      "duration": 0.917,
+      "codecs": [
+        "h264",
+        "aac"
+      ],
+      "frames": 22
+    },
+    {
+      "name": "h3_ref",
+      "mode": "h3_ref",
+      "status": "completed",
+      "job": "2f2cbac3157f4d2b84064d9f3b2cc5ad",
+      "target": "716a5d77c78741aa977fc9ef871e41c8",
+      "seconds": 20.253,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_video_size": [
+        416,
+        256
+      ],
+      "duration": 0.917,
+      "codecs": [
+        "h264",
+        "aac"
+      ],
+      "frames": 22
+    },
+    {
+      "name": "h3_t2v",
+      "mode": "h3_t2v",
+      "status": "completed",
+      "job": "a80f87f9805949d6ae1b47873f858309",
+      "target": "716a5d77c78741aa977fc9ef871e41c8",
+      "seconds": 18.603,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_video_size": [
+        416,
+        256
+      ],
+      "duration": 0.917,
+      "codecs": [
+        "h264",
+        "aac"
+      ],
+      "frames": 22
+    },
+    {
+      "name": "h3_fl2v",
+      "mode": "h3_fl2v",
+      "status": "completed",
+      "job": "11175b81a76e4c17ae33b895f0d5c823",
+      "target": "716a5d77c78741aa977fc9ef871e41c8",
+      "seconds": 18.823,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": false,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_video_size": [
+        416,
+        256
+      ],
+      "duration": 0.917,
+      "codecs": [
+        "h264",
+        "aac"
+      ],
+      "frames": 22
+    },
+    {
+      "name": "H3 电影 LoRA 开启",
+      "mode": "h3_i2v",
+      "status": "completed",
+      "job": "660e8671dd42441db6938ed473eb9587",
+      "target": "716a5d77c78741aa977fc9ef871e41c8",
+      "seconds": 20.113,
+      "megapixels": 0.1,
+      "steps": 2,
+      "cinema": true,
+      "quad_lora": true,
+      "styles": [],
+      "scale": 1.5,
+      "actual_video_size": [
+        416,
+        256
+      ],
+      "duration": 0.917,
+      "codecs": [
+        "h264",
+        "aac"
+      ],
+      "frames": 22
+    },
+    {
+      "name": "Qwen BF16 原配置",
+      "mode": "qwen",
+      "status": "completed",
+      "job": "aedfc72cbe7b464aa5601e171e085bac",
+      "target": "15b9791958c34d538491beecfb80dd90",
+      "megapixels": 0.1,
+      "steps": 4,
+      "qwen_int8": false,
+      "actual_image_size": [
+        416,
+        256
+      ]
+    }
+  ],
+  "deepseek": {
+    "creation_to_generation": "completed",
+    "skill_reads": 1,
+    "models": [
+      "deepseek-flash",
+      "deepseek-v4-pro"
+    ],
+    "search_source_count": 10,
+    "packaged_v4_pro": true
+  },
+  "recovery": {
+    "passed": true,
+    "same_prompt_id": "004fa4f0-f61e-4ae4-8a0d-9bd423c199a2",
+    "no_duplicate_version": true
+  },
+  "comfy_process_before_and_after": 46192
+}

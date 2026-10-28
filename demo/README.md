@@ -1,3 +1,5 @@
+公开说明（2026-10-28）：以下截图和原始日志路径指作者本机历史证据，未随公开仓库发布。可公开测试汇总见 `evidence/public-summary-20261028/`。当前 APK 为 preview.5；历史真机记录对应当时版本。
+
 # HR 演示录制方案（60–90 秒）
 
 当前手机版本为 `1.2.1-native-preview.4`：暖白青蓝界面，首页 / 创作 / 素材 / 任务四栏导航，AI 助手从创作页悬浮入口进入全屏。界面真机截图在 `demo/evidence/android-design-20261022/screenshots/`，记录见 `docs/ANDROID-MOBILE-DESIGN.md`。此前真实图片与视频生成证据仍在 `demo/evidence/android-ux-20261022/`，操作见 `docs/ANDROID-GENERATION-UX.md`；生成入口现在位于首页和创作页。

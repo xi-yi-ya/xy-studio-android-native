@@ -1,0 +1,25 @@
+{
+  "published_on": "2026-10-28",
+  "tested_on": "2026-10-26",
+  "python": {
+    "passed": 181,
+    "seconds": 10.66
+  },
+  "android_unit": {
+    "passed": 10,
+    "failures": 0
+  },
+  "emulator_ui": {
+    "passed": 1,
+    "seconds": 18.226,
+    "device": "Android Studio AVD / API 37",
+    "connection": "real HTTP/WebSocket to PC",
+    "queue": "paused; submitted locally then cancelled; no cloud IDs"
+  },
+  "existing_video_playback_seconds": 1.645,
+  "paid_cloud_generation": "NOT_RUN; author declined spending credits",
+  "physical_phone_test_this_cloud_iteration": "NOT_RUN",
+  "windows_build": "PASS; exe launched; further packaged UI inspection stopped by author",
+  "known_diagnostic": "One targeted Qt/COM 0x8001010d diagnostic; 46 tests passed; isolated chat module 7 passed",
+  "raw_logs_and_personal_media": "kept locally; not published"
+}
